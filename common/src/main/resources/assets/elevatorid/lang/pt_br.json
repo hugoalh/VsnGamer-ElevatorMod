@@ -1,0 +1,34 @@
+{
+  "block.elevatorid.elevator_white": "Elevador branco",
+  "block.elevatorid.elevator_black": "Elevador preto",
+  "block.elevatorid.elevator_blue": "Elevador azul",
+  "block.elevatorid.elevator_brown": "Elevador marrom",
+  "block.elevatorid.elevator_cyan": "Elevador ciano",
+  "block.elevatorid.elevator_gray": "Elevador cinza",
+  "block.elevatorid.elevator_green": "Elevador verde",
+  "block.elevatorid.elevator_light_blue": "Elevador azul-claro",
+  "block.elevatorid.elevator_lime": "Elevador verde-limão",
+  "block.elevatorid.elevator_magenta": "Elevador magenta",
+  "block.elevatorid.elevator_orange": "Elevador laranja",
+  "block.elevatorid.elevator_pink": "Elevador rosa",
+  "block.elevatorid.elevator_purple": "Elevador roxo",
+  "block.elevatorid.elevator_red": "Elevador vermelho",
+  "block.elevatorid.elevator_light_gray": "Elevador cinza-claro",
+  "block.elevatorid.elevator_yellow": "Elevador amarelo",
+
+  "elevatorid.subtitle.teleport": "Elevador usado",
+  "elevatorid.subtitle.camouflage": "Elevador camuflado",
+
+  "screen.elevatorid.elevator": "Opções do elevador",
+  "screen.elevatorid.elevator.directional": "Direcional",
+  "screen.elevatorid.elevator.directional_north": "N",
+  "screen.elevatorid.elevator.directional_east": "L",
+  "screen.elevatorid.elevator.directional_south": "S",
+  "screen.elevatorid.elevator.directional_west": "O",
+  "screen.elevatorid.elevator.hide_arrow": "Ocultar seta",
+  "screen.elevatorid.elevator.reset_camo": "Remover camuflagem",
+
+  "elevatorid.message.missing_xp": "Você não tem XP suficiente para se teletransportar",
+
+  "itemGroup.elevators_tab": "Elevadores"
+}
