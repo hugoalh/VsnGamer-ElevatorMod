@@ -46,8 +46,7 @@ public class ElevatorScreen extends AbstractContainerScreen<ElevatorContainer> {
         super.init();
 
         // Toggle directional button
-        Component dirLang = Component.translatable("screen.elevatorid.elevator.directional");
-        dirButton = Checkbox.builder(dirLang, font)
+        dirButton = Checkbox.builder(Component.translatable("screen.elevatorid.elevator.directional"), font)
                 .pos(leftPos + 8, topPos + 25)
                 .selected(tile.getBlockState().getValue(ElevatorBlock.DIRECTIONAL))
                 .onValueChange((checkbox, selected) -> PacketDistributor.sendToServer(new SetDirectionalPacket(selected, tile.getBlockPos())))
@@ -55,22 +54,13 @@ public class ElevatorScreen extends AbstractContainerScreen<ElevatorContainer> {
         addRenderableWidget(dirButton);
 
         // Toggle arrow button
-        Component arrowLang = Component.translatable("screen.elevatorid.elevator.hide_arrow");
-        hideArrowButton = Checkbox.builder(arrowLang, font)
+        hideArrowButton = Checkbox.builder(Component.translatable("screen.elevatorid.elevator.hide_arrow"), font)
                 .pos(leftPos + 8, topPos + 50)
                 .selected(!tile.getBlockState().getValue(ElevatorBlock.SHOW_ARROW))
                 .onValueChange((checkbox, selected) -> PacketDistributor.sendToServer(new SetArrowPacket(!selected, tile.getBlockPos())))
                 .build();
         hideArrowButton.visible = tile.getBlockState().getValue(ElevatorBlock.DIRECTIONAL);
         addRenderableWidget(hideArrowButton);
-
-        // Reset camouflage button
-        Component resetCamoLang = Component.translatable("screen.elevatorid.elevator.reset_camo");
-        resetCamoButton = Button.builder(resetCamoLang, but -> PacketDistributor.sendToServer(new RemoveCamoPacket(tile.getBlockPos())))
-                .pos(leftPos + 8, topPos + 75)
-                .size(110, 20)
-                .build();
-        addRenderableWidget(resetCamoButton);
 
         // Directional controller
         facingController = new FacingControllerWrapper(leftPos + 120, topPos + 20, tile.getBlockPos(), playerFacing);
@@ -80,6 +70,15 @@ public class ElevatorScreen extends AbstractContainerScreen<ElevatorContainer> {
             button.active = tile.getBlockState().getValue(ElevatorBlock.FACING) != button.direction;
         });
 
+        // Reset camouflage button
+        resetCamoButton = Button.builder(
+                        Component.translatable("screen.elevatorid.elevator.reset_camo"),
+                        but -> PacketDistributor.sendToServer(new RemoveCamoPacket(tile.getBlockPos()))
+                )
+                .pos(leftPos + 8, topPos + 75)
+                .size(110, 20)
+                .build();
+        addRenderableWidget(resetCamoButton);
         resetCamoButton.active = tile.getHeldState() != null;
     }
 
@@ -92,7 +91,7 @@ public class ElevatorScreen extends AbstractContainerScreen<ElevatorContainer> {
     public void containerTick() {
         super.containerTick();
 
-//        dirButton.selected = tile.getBlockState().getValue(ElevatorBlock.DIRECTIONAL);
+        dirButton.selected = tile.getBlockState().getValue(ElevatorBlock.DIRECTIONAL);
 
         facingController.getButtons().forEach(button -> {
             button.visible = tile.getBlockState().getValue(ElevatorBlock.DIRECTIONAL);
@@ -100,7 +99,7 @@ public class ElevatorScreen extends AbstractContainerScreen<ElevatorContainer> {
         });
 
         hideArrowButton.visible = tile.getBlockState().getValue(ElevatorBlock.DIRECTIONAL);
-//        hideArrowButton.selected = !tile.getBlockState().getValue(ElevatorBlock.SHOW_ARROW);
+        hideArrowButton.selected = !tile.getBlockState().getValue(ElevatorBlock.SHOW_ARROW);
 
         resetCamoButton.active = tile.getHeldState() != null;
     }

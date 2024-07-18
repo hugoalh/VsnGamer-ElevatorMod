@@ -1,10 +1,9 @@
 package com.vsngarcia.fabric.tile;
 
-import com.vsngarcia.ElevatorMod;
 import com.vsngarcia.fabric.ElevatorBlock;
 import com.vsngarcia.fabric.FabricRegistry;
 import net.fabricmc.fabric.api.blockview.v2.RenderDataBlockEntity;
-import net.minecraft.client.multiplayer.ClientLevel;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -16,9 +15,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -27,13 +25,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
 import static com.vsngarcia.fabric.FabricRegistry.CAMOUFLAGE_SOUND;
 
 
-public class ElevatorTileEntity extends BlockEntity implements RenderDataBlockEntity, MenuProvider {
+public class ElevatorTileEntity extends BlockEntity implements RenderDataBlockEntity, ExtendedScreenHandlerFactory<ElevatorContainer.ElevatorContainerData> {
 
     private BlockState heldState;
 
@@ -56,7 +53,7 @@ public class ElevatorTileEntity extends BlockEntity implements RenderDataBlockEn
         }
 
         if (level != null && level.isClientSide()) {
-            level.sendBlockUpdated(getBlockPos(),null,null,0);
+            level.sendBlockUpdated(getBlockPos(), null, null, 0);
             level.getLightEngine().checkBlock(getBlockPos());
         }
     }
@@ -116,30 +113,8 @@ public class ElevatorTileEntity extends BlockEntity implements RenderDataBlockEn
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_ALL);
             level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock());
             level.getLightEngine().checkBlock(getBlockPos());
-//            ((ServerLevel) level).getChunkSource().blockChanged(getBlockPos());
         }
     }
-
-//    private void markUpdated() {
-//        setChanged();
-//
-////        requestModelDataUpdate();
-//        if (level == null || level.isClientSide()) {
-//            return;
-//        }
-//
-//        LogManager.getLogger(ElevatorMod.ID).warn("Marking elevator at {} as updated", getBlockPos());
-
-
-//        level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock());
-//        getBlockState().updateNeighbourShapes(level, worldPosition, 2);
-
-//        level.getLightEngine().checkBlock(worldPosition);
-//        level.setBlocksDirty(worldPosition, getBlockState(), getBlockState());
-//        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_ALL);
-//        level.blockUpdated(getBlockPos(), getBlockState().getBlock());
-//        ((ServerLevel) level).getChunkSource().blockChanged(getBlockPos());
-//    }
 
     public BlockState getHeldState() {
         return heldState;
@@ -178,5 +153,10 @@ public class ElevatorTileEntity extends BlockEntity implements RenderDataBlockEn
 
         // Only blocks with a collision box
         return !state.getCollisionShape(null, null).isEmpty();
+    }
+
+    @Override
+    public ElevatorContainer.ElevatorContainerData getScreenOpeningData(ServerPlayer player) {
+        return new ElevatorContainer.ElevatorContainerData(getBlockPos());
     }
 }

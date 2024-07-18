@@ -24,7 +24,11 @@ class FacingButton extends Button {
                 20,
                 20,
                 Component.translatable("screen.elevatorid.elevator.directional_" + direction.getName()),
-                but -> PacketDistributor.sendToServer(new SetFacingPacket(direction, pos)), DEFAULT_NARRATION
+                but -> {
+                    PacketDistributor.sendToServer(new SetFacingPacket(direction, pos));
+                    but.setFocused(false);
+                },
+                DEFAULT_NARRATION
         );
 
         this.direction = direction;
@@ -33,8 +37,16 @@ class FacingButton extends Button {
     @Override
     public void renderWidget(@Nonnull GuiGraphics guiGraphics, int mouseX, int mouseY, float partial) {
         //RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        if (isHoveredOrFocused()) guiGraphics.fill(getX(), getY(), getX() + width, getY() + height, -2130706433);
+        if (isHoveredOrFocused() && active) {
+            guiGraphics.fill(getX(), getY(), getX() + width, getY() + height, -2130706433);
+        }
 
-        guiGraphics.drawCenteredString(Minecraft.getInstance().font, getMessage().getString(), getX() + this.width / 2, getY() + (this.height - 8) / 2, active ? 16777215 : 65280);
+        guiGraphics.drawCenteredString(
+                Minecraft.getInstance().font,
+                getMessage().getString(),
+                getX() + this.width / 2,
+                getY() + (this.height - 8) / 2,
+                active ? 16777215 : 65280
+        );
     }
 }

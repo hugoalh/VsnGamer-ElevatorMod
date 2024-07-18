@@ -30,5 +30,7 @@
 
   "elevatorid.message.missing_xp": "You do not have enough XP to teleport",
 
-  "itemGroup.elevators_tab": "Elevators"
+  "itemGroup.elevators_tab": "Elevators",
+
+  "tag.item.elevatorid.elevators": "Elevators"
 }

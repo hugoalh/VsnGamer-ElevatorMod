@@ -11,20 +11,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 
 
-//@EventBusSubscriber(value = Dist.CLIENT, modid = ElevatorMod.ID)
 public class ElevatorHandler {
     private static boolean lastSneaking;
     private static boolean lastJumping;
-
-//    @SubscribeEvent
-//    public static void onInput(InputEvent.Key event) {
-//        handleInput();
-//    }
-//
-//    @SubscribeEvent
-//    private static void onMouseInput(InputEvent.MouseButton.Post event) {
-//        handleInput();
-//    }
 
     public static void init() {
         ClientTickEvents.END_CLIENT_TICK.register(
@@ -60,8 +49,7 @@ public class ElevatorHandler {
 
         BlockPos.MutableBlockPos toPos = fromPos.mutable();
 
-        ElevatorBlock fromElevator;
-        fromElevator = (ElevatorBlock) world.getBlockState(fromPos).getBlock();
+//        ElevatorBlock fromElevator = (ElevatorBlock) world.getBlockState(fromPos).getBlock();
 
         while (true) {
             toPos.setY(toPos.getY() + facing.getStepY());
@@ -85,12 +73,11 @@ public class ElevatorHandler {
      * @return the position of the first valid elevator or null if it doesn't exist
      */
     private static BlockPos getOriginElevator(LocalPlayer player) {
-        Level world = player.level();
         BlockPos pos = player.blockPosition();
 
         // Check the player's feet and the 2 blocks under it
         for (int i = 0; i < 3; i++) {
-            if (TeleportHandler.getElevator(world.getBlockState(pos)) != null)
+            if (TeleportHandler.getElevator(player.level().getBlockState(pos)) != null)
                 return pos;
             pos = pos.below();
         }

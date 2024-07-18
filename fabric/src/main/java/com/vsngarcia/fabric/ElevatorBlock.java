@@ -17,7 +17,10 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -48,7 +51,6 @@ public class ElevatorBlock extends HorizontalDirectionalBlock implements EntityB
     }
 
     public ElevatorBlock(DyeColor color) {
-
         super(Properties
                         .of()
                         .mapColor(color)
@@ -56,8 +58,17 @@ public class ElevatorBlock extends HorizontalDirectionalBlock implements EntityB
                         .strength(0.8F)
                         .dynamicShape()
                         .noOcclusion()
+
 //                        .isValidSpawn(ElevatorBlock::isValidSpawn)
 //                .forceSolidOn()
+        );
+
+
+        registerDefaultState(
+                defaultBlockState()
+                        .setValue(FACING, Direction.NORTH)
+                        .setValue(DIRECTIONAL, false)
+                        .setValue(SHOW_ARROW, true)
         );
 
         dyeColor = color;
@@ -68,13 +79,13 @@ public class ElevatorBlock extends HorizontalDirectionalBlock implements EntityB
         builder.add(FACING, DIRECTIONAL, SHOW_ARROW);
     }
 
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState()
-                .setValue(FACING, context.getHorizontalDirection().getOpposite())
-                .setValue(DIRECTIONAL, true)
-                .setValue(SHOW_ARROW, true);
-    }
+//    @Override
+//    public BlockState getStateForPlacement(BlockPlaceContext context) {
+//        return defaultBlockState()
+//                .setValue(FACING, context.getHorizontalDirection().getOpposite())
+//                .setValue(DIRECTIONAL, false)
+//                .setValue(SHOW_ARROW, true);
+//    }
 
 
     @Override
@@ -107,7 +118,7 @@ public class ElevatorBlock extends HorizontalDirectionalBlock implements EntityB
                         return ItemInteractionResult.SUCCESS;
                     }
 
-//                    player.openMenu(tile, pos);
+                    player.openMenu(tile);
                     return ItemInteractionResult.SUCCESS;
                 })
                 .orElse(ItemInteractionResult.FAIL);

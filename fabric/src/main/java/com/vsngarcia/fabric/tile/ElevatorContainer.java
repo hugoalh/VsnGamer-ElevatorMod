@@ -3,13 +3,11 @@ package com.vsngarcia.fabric.tile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
 
 import static com.vsngarcia.fabric.FabricRegistry.ELEVATOR_CONTAINER;
@@ -24,11 +22,9 @@ public class ElevatorContainer extends AbstractContainerMenu {
     public ElevatorContainer(int id, BlockPos pos, Player player) {
         super(ELEVATOR_CONTAINER, id);
 
-        // TODO: 08/06/2023 Check if this is the correct way to get the level
-
-        BlockEntity tile = player.level().getBlockEntity(pos);
-        if (tile instanceof ElevatorTileEntity)
-            elevatorTile = (ElevatorTileEntity) tile;
+        if (player.level().getBlockEntity(pos) instanceof ElevatorTileEntity tile) {
+            elevatorTile = tile;
+        }
 
         playerFacing = player.getDirection();
         this.pos = pos;
@@ -59,10 +55,6 @@ public class ElevatorContainer extends AbstractContainerMenu {
 
     public record ElevatorContainerData(BlockPos pos) {
         public static final StreamCodec<RegistryFriendlyByteBuf, ElevatorContainerData> CODEC =
-                StreamCodec.composite(
-                        BlockPos.STREAM_CODEC,
-                        ElevatorContainerData::pos,
-                        ElevatorContainerData::new
-                );
+                StreamCodec.composite(BlockPos.STREAM_CODEC, ElevatorContainerData::pos, ElevatorContainerData::new);
     }
 }

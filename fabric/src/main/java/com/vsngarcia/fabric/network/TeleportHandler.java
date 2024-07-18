@@ -21,11 +21,12 @@ import static com.vsngarcia.fabric.FabricRegistry.TELEPORT_SOUND;
 
 public class TeleportHandler {
     public static void handle(TeleportRequest message, ServerPlayNetworking.Context ctx) {
-        ServerPlayer player = ctx.player();
-        if (isBadTeleportPacket(message, player))
-            return;
+        ctx.server().execute(() -> {
+            ServerPlayer player = ctx.player();
+            if (isBadTeleportPacket(message, player))
+                return;
 
-        // XP
+            // XP
 //            if (Config.GENERAL.useXP.get() && !player.isCreative()) {
 //                Integer xpCost = Config.GENERAL.XPPointsAmount.get();
 //                if (getPlayerExperienceProgress(player) - xpCost >= 0 || player.experienceLevel > 0) {
@@ -36,26 +37,26 @@ public class TeleportHandler {
 //                }
 //            }
 
-        if (!(player.level() instanceof ServerLevel world))
-            return;
+            if (!(player.level() instanceof ServerLevel world))
+                return;
 
-        BlockPos toPos = message.to();
-        BlockState toState = world.getBlockState(message.to());
+            BlockPos toPos = message.to();
+            BlockState toState = world.getBlockState(message.to());
 
-        // Check yaw and pitch
-        final float yaw = toState.getValue(ElevatorBlock.DIRECTIONAL)
-                ? toState.getValue(ElevatorBlock.FACING).toYRot() : player.getYRot();
+            // Check yaw and pitch
+            final float yaw = toState.getValue(ElevatorBlock.DIRECTIONAL)
+                    ? toState.getValue(ElevatorBlock.FACING).toYRot() : player.getYRot();
 
 //            final float pitch = (toState.getValue(ElevatorBlock.DIRECTIONAL) && Config.GENERAL.resetPitchDirectional.get())
 //                    || (!toState.getValue(ElevatorBlock.DIRECTIONAL) && Config.GENERAL.resetPitchNormal.get())
 //                    ? 0F : player.getXRot();
 
-        final float pitch = 0F;
+            final float pitch = player.getXRot();
 
-        // Check X and Z
-        final double toX, toZ;
-        toX = toPos.getX() + .5D;
-        toZ = toPos.getZ() + .5D;
+            // Check X and Z
+            final double toX, toZ;
+            toX = toPos.getX() + .5D;
+            toZ = toPos.getZ() + .5D;
 //            if (Config.GENERAL.precisionTarget.get()) {
 //                toX = toPos.getX() + .5D;
 //                toZ = toPos.getZ() + .5D;
@@ -64,11 +65,13 @@ public class TeleportHandler {
 //                toZ = player.getZ();
 //            }
 
-        double blockYOffset = toState.getBlockSupportShape(world, toPos).max(Direction.Axis.Y);
-        player.teleportTo(world, toX, Math.max(toPos.getY(), toPos.getY() + blockYOffset), toZ, EnumSet.noneOf(RelativeMovement.class), yaw, pitch);
-        player.setDeltaMovement(player.getDeltaMovement().multiply(new Vec3(1D, 0D, 1D)));
+            double blockYOffset = toState.getBlockSupportShape(world, toPos).max(Direction.Axis.Y);
+            player.teleportTo(world, toX, Math.max(toPos.getY(), toPos.getY() + blockYOffset), toZ, EnumSet.noneOf(RelativeMovement.class), yaw, pitch);
+            player.setDeltaMovement(player.getDeltaMovement().multiply(new Vec3(1D, 0D, 1D)));
 
-        world.playSound(null, toPos, TELEPORT_SOUND, SoundSource.BLOCKS, 1F, 1F);
+            world.playSound(null, toPos, TELEPORT_SOUND, SoundSource.BLOCKS, 1F, 1F);
+
+        });
     }
 
     private static boolean isBadTeleportPacket(TeleportRequest msg, Player player) {

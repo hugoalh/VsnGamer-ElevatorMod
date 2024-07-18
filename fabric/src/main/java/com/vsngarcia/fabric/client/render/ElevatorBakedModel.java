@@ -1,34 +1,26 @@
 package com.vsngarcia.fabric.client.render;
 
 import com.vsngarcia.ElevatorMod;
-import com.vsngarcia.fabric.FabricRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.renderer.v1.Renderer;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
-import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.model.ForwardingBakedModel;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.joml.Vector3f;
 
 import java.util.function.Supplier;
 
 import static com.vsngarcia.fabric.ElevatorBlock.DIRECTIONAL;
 import static com.vsngarcia.fabric.ElevatorBlock.SHOW_ARROW;
-import static com.vsngarcia.fabric.FabricRegistry.ELEVATOR_BLOCK_ENTITY_TYPE;
 import static net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
 
 @Environment(EnvType.CLIENT)
@@ -79,16 +71,8 @@ public class ElevatorBakedModel extends ForwardingBakedModel {
             context.popTransform();
         }
 
-//        var be = blockView.getBlockEntity(pos, ELEVATOR_BLOCK_ENTITY_TYPE);
-//        if (be.isPresent() && be.get().getHeldState() != null) {
-//            MC.getBlockRenderer().getBlockModel(be.get().getHeldState())
-//                    .emitBlockQuads(blockView, be.get().getHeldState(), pos, randomSupplier, context);
-//            return;
-//        }
-
-        Logger logger = LogManager.getLogger(ElevatorMod.ID);
         if (blockView.getBlockEntityRenderData(pos) instanceof BlockState heldState) {
-            logger.warn("Found held state for elevator at {}", pos);
+//            ElevatorMod.LOGGER.warn("Found held state for elevator at {}", pos);
 
             context.pushTransform(
                     quad -> {
@@ -113,7 +97,7 @@ public class ElevatorBakedModel extends ForwardingBakedModel {
             return;
         }
 
-        logger.warn("No held state found for elevator at {}", pos);
+//        ElevatorMod.LOGGER.warn("No held state found for elevator at {}", pos);
         super.emitBlockQuads(blockView, state, pos, randomSupplier, context);
     }
 }
