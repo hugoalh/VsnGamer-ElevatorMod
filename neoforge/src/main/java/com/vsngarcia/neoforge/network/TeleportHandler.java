@@ -1,7 +1,7 @@
 package com.vsngarcia.neoforge.network;
 
 import com.vsngarcia.neoforge.ElevatorBlock;
-import com.vsngarcia.neoforge.init.Config;
+import com.vsngarcia.Config;
 import com.vsngarcia.neoforge.init.Registry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;

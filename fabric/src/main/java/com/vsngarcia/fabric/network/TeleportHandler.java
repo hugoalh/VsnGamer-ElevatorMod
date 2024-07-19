@@ -1,9 +1,12 @@
 package com.vsngarcia.fabric.network;
 
+import com.vsngarcia.Config;
 import com.vsngarcia.fabric.ElevatorBlock;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -27,15 +30,18 @@ public class TeleportHandler {
                 return;
 
             // XP
-//            if (Config.GENERAL.useXP.get() && !player.isCreative()) {
-//                Integer xpCost = Config.GENERAL.XPPointsAmount.get();
-//                if (getPlayerExperienceProgress(player) - xpCost >= 0 || player.experienceLevel > 0) {
-//                    player.giveExperiencePoints(-xpCost);
-//                } else {
-//                    player.displayClientMessage(Component.translatable("elevatorid.message.missing_xp").withStyle(ChatFormatting.RED), true);
-//                    return;
-//                }
-//            }
+            if (Config.GENERAL.useXP.get() && !player.isCreative()) {
+                Integer xpCost = Config.GENERAL.XPPointsAmount.get();
+                if (getPlayerExperienceProgress(player) - xpCost >= 0 || player.experienceLevel > 0) {
+                    player.giveExperiencePoints(-xpCost);
+                } else {
+                    player.displayClientMessage(
+                            Component.translatable("elevatorid.message.missing_xp").withStyle(ChatFormatting.RED),
+                            true
+                    );
+                    return;
+                }
+            }
 
             if (!(player.level() instanceof ServerLevel world))
                 return;
@@ -47,26 +53,24 @@ public class TeleportHandler {
             final float yaw = toState.getValue(ElevatorBlock.DIRECTIONAL)
                     ? toState.getValue(ElevatorBlock.FACING).toYRot() : player.getYRot();
 
-//            final float pitch = (toState.getValue(ElevatorBlock.DIRECTIONAL) && Config.GENERAL.resetPitchDirectional.get())
-//                    || (!toState.getValue(ElevatorBlock.DIRECTIONAL) && Config.GENERAL.resetPitchNormal.get())
-//                    ? 0F : player.getXRot();
-
-            final float pitch = player.getXRot();
+            final float pitch = (toState.getValue(ElevatorBlock.DIRECTIONAL) && Config.GENERAL.resetPitchDirectional.get())
+                    || (!toState.getValue(ElevatorBlock.DIRECTIONAL) && Config.GENERAL.resetPitchNormal.get())
+                    ? 0F : player.getXRot();
 
             // Check X and Z
-            final double toX, toZ;
-            toX = toPos.getX() + .5D;
-            toZ = toPos.getZ() + .5D;
-//            if (Config.GENERAL.precisionTarget.get()) {
-//                toX = toPos.getX() + .5D;
-//                toZ = toPos.getZ() + .5D;
-//            } else {
-//                toX = player.getX();
-//                toZ = player.getZ();
-//            }
+            final double toX = Config.GENERAL.precisionTarget.get() ? toPos.getX() + .5D : player.getX();
+            final double toZ = Config.GENERAL.precisionTarget.get() ? toPos.getZ() + .5D : player.getZ();
 
             double blockYOffset = toState.getBlockSupportShape(world, toPos).max(Direction.Axis.Y);
-            player.teleportTo(world, toX, Math.max(toPos.getY(), toPos.getY() + blockYOffset), toZ, EnumSet.noneOf(RelativeMovement.class), yaw, pitch);
+            player.teleportTo(
+                    world,
+                    toX,
+                    Math.max(toPos.getY(), toPos.getY() + blockYOffset),
+                    toZ,
+                    EnumSet.noneOf(RelativeMovement.class),
+                    yaw,
+                    pitch
+            );
             player.setDeltaMovement(player.getDeltaMovement().multiply(new Vec3(1D, 0D, 1D)));
 
             world.playSound(null, toPos, TELEPORT_SOUND, SoundSource.BLOCKS, 1F, 1F);
@@ -105,8 +109,7 @@ public class TeleportHandler {
         if (!isValidPos(world, toPos))
             return true;
 
-        return false;
-//        return Config.GENERAL.sameColor.get() && fromElevator.getColor() != toElevator.getColor();
+        return Config.GENERAL.sameColor.get() && fromElevator.getColor() != toElevator.getColor();
     }
 
     private static int getPlayerExperienceProgress(Player player) {

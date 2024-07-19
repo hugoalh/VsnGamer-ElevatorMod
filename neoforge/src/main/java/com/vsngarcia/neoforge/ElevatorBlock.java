@@ -3,7 +3,7 @@ package com.vsngarcia.neoforge;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.vsngarcia.neoforge.client.render.ElevatorBakedModel;
-import com.vsngarcia.neoforge.init.Config;
+import com.vsngarcia.Config;
 import com.vsngarcia.neoforge.tile.ElevatorTileEntity;
 import com.vsngarcia.util.FakeUseContext;
 import net.minecraft.core.BlockPos;

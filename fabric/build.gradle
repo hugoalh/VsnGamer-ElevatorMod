@@ -37,7 +37,11 @@ dependencies {
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 
-    modImplementation "maven.modrinth:modmenu:11.0.1"
+    modApi "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:21.0.5"
+
+    modLocalRuntime "maven.modrinth:modmenu:11.0.1"
+    modLocalRuntime "maven.modrinth:sodium:mc1.21-0.5.11"
+    modLocalRuntime "maven.modrinth:indium:1.0.34+mc1.21"
 }
 
 processResources {

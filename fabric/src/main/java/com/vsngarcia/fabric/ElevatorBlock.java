@@ -2,6 +2,7 @@ package com.vsngarcia.fabric;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.vsngarcia.Config;
 import com.vsngarcia.fabric.tile.ElevatorTileEntity;
 import com.vsngarcia.util.FakeUseContext;
 import net.minecraft.core.BlockPos;
@@ -9,6 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -59,7 +61,7 @@ public class ElevatorBlock extends HorizontalDirectionalBlock implements EntityB
                         .dynamicShape()
                         .noOcclusion()
 
-//                        .isValidSpawn(ElevatorBlock::isValidSpawn)
+                        .isValidSpawn(ElevatorBlock::isValidSpawn)
 //                .forceSolidOn()
         );
 
@@ -78,15 +80,6 @@ public class ElevatorBlock extends HorizontalDirectionalBlock implements EntityB
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, DIRECTIONAL, SHOW_ARROW);
     }
-
-//    @Override
-//    public BlockState getStateForPlacement(BlockPlaceContext context) {
-//        return defaultBlockState()
-//                .setValue(FACING, context.getHorizontalDirection().getOpposite())
-//                .setValue(DIRECTIONAL, false)
-//                .setValue(SHOW_ARROW, true);
-//    }
-
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -124,12 +117,12 @@ public class ElevatorBlock extends HorizontalDirectionalBlock implements EntityB
                 .orElse(ItemInteractionResult.FAIL);
     }
 
-//    public static boolean isValidSpawn(BlockState state, BlockGetter world, BlockPos pos, EntityType<?> entityType) {
-//        return Config.GENERAL.mobSpawn.get() &&
-//                getHeldState(world, pos)
-//                        .map(s -> s.isValidSpawn(world, pos, entityType))
-//                        .orElse(state.isFaceSturdy(world, pos, Direction.UP));
-//    }
+    public static boolean isValidSpawn(BlockState state, BlockGetter world, BlockPos pos, EntityType<?> entityType) {
+        return Config.GENERAL.mobSpawn.get() &&
+                getHeldState(world, pos)
+                        .map(s -> s.isValidSpawn(world, pos, entityType))
+                        .orElse(state.isFaceSturdy(world, pos, Direction.UP));
+    }
 
     // Collision
 

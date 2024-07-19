@@ -1,16 +1,8 @@
-package com.vsngarcia.neoforge.init;
+package com.vsngarcia;
 
-import com.vsngarcia.ElevatorMod;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import org.apache.logging.log4j.LogManager;
-
-import static net.neoforged.fml.Logging.FORGEMOD;
 
 
-@EventBusSubscriber(modid = ElevatorMod.ID, bus = EventBusSubscriber.Bus.MOD)
 public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
     public static final CommonGeneral GENERAL = new CommonGeneral(BUILDER);
@@ -64,17 +56,5 @@ public class Config {
 
             builder.pop();
         }
-    }
-
-    // Same debug messages as forge config
-
-    @SubscribeEvent
-    public static void onLoad(final ModConfigEvent.Loading configEvent) {
-        LogManager.getLogger().debug(FORGEMOD, "Loaded elevator config file {}", configEvent.getConfig().getFileName());
-    }
-
-    @SubscribeEvent
-    public static void onFileChange(final ModConfigEvent.Reloading configEvent) {
-        LogManager.getLogger().debug(FORGEMOD, "Elevator config just got changed on the file system!");
     }
 }

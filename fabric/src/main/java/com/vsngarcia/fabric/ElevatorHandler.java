@@ -1,5 +1,6 @@
 package com.vsngarcia.fabric;
 
+import com.vsngarcia.Config;
 import com.vsngarcia.fabric.network.TeleportHandler;
 import com.vsngarcia.fabric.network.TeleportRequest;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -45,23 +46,26 @@ public class ElevatorHandler {
         Level world = player.level();
 
         BlockPos fromPos = getOriginElevator(player);
-        if (fromPos == null) return;
+        if (fromPos == null) {
+            return;
+        }
 
         BlockPos.MutableBlockPos toPos = fromPos.mutable();
 
-//        ElevatorBlock fromElevator = (ElevatorBlock) world.getBlockState(fromPos).getBlock();
+        ElevatorBlock fromElevator = (ElevatorBlock) world.getBlockState(fromPos).getBlock();
 
         while (true) {
             toPos.setY(toPos.getY() + facing.getStepY());
-            if (world.isOutsideBuildHeight(toPos))
+            if (world.isOutsideBuildHeight(toPos) || Math.abs(toPos.getY() - fromPos.getY()) > Config.GENERAL.range.get()) {
                 break;
+            }
 
             ElevatorBlock toElevator = TeleportHandler.getElevator(world.getBlockState(toPos));
             if (toElevator != null && TeleportHandler.isValidPos(world, toPos)) {
-//                if (!Config.GENERAL.sameColor.get() || fromElevator.getColor() == toElevator.getColor()) {
-                ClientPlayNetworking.send(new TeleportRequest(fromPos, toPos));
-                break;
-//                }
+                if (!Config.GENERAL.sameColor.get() || fromElevator.getColor() == toElevator.getColor()) {
+                    ClientPlayNetworking.send(new TeleportRequest(fromPos, toPos));
+                    break;
+                }
             }
         }
     }

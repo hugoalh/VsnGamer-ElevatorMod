@@ -1,7 +1,7 @@
 package com.vsngarcia.neoforge;
 
 import com.vsngarcia.ElevatorMod;
-import com.vsngarcia.neoforge.init.Config;
+import com.vsngarcia.Config;
 import com.vsngarcia.neoforge.network.TeleportHandler;
 import com.vsngarcia.neoforge.network.TeleportRequest;
 import net.minecraft.client.Minecraft;
