@@ -28,7 +28,7 @@
   "screen.elevatorid.elevator.hide_arrow": "Ocultar seta",
   "screen.elevatorid.elevator.reset_camo": "Remover camuflagem",
 
-  "elevatorid.message.missing_xp": "Você não tem XP suficiente para se teletransportar",
+  "elevatorid.message.missing_xp": "Você não tem XP suficiente para usar elevadores",
 
   "itemGroup.elevators_tab": "Elevadores"
 }
