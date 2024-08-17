@@ -1,10 +1,7 @@
-package com.vsngarcia.fabric;
+package com.vsngarcia;
 
-import com.vsngarcia.Config;
-import com.vsngarcia.fabric.network.TeleportHandler;
-import com.vsngarcia.fabric.network.TeleportRequest;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import com.vsngarcia.network.ClientPacketSender;
+import com.vsngarcia.network.TeleportPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -13,16 +10,11 @@ import net.minecraft.world.level.Level;
 
 
 public class ElevatorHandler {
+
     private static boolean lastSneaking;
     private static boolean lastJumping;
 
-    public static void init() {
-        ClientTickEvents.END_CLIENT_TICK.register(
-                client -> handleInput()
-        );
-    }
-
-    private static void handleInput() {
+    public static void handleInput(ClientPacketSender sender) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null || player.isSpectator() || !player.isAlive() || player.input == null)
             return;
@@ -30,19 +22,21 @@ public class ElevatorHandler {
         boolean sneaking = player.input.shiftKeyDown;
         if (lastSneaking != sneaking) {
             lastSneaking = sneaking;
-            if (sneaking)
-                tryTeleport(player, Direction.DOWN);
+            if (sneaking) {
+                tryTeleport(player, Direction.DOWN, sender);
+            }
         }
 
         boolean jumping = player.input.jumping;
         if (lastJumping != jumping) {
             lastJumping = jumping;
-            if (jumping)
-                tryTeleport(player, Direction.UP);
+            if (jumping) {
+                tryTeleport(player, Direction.UP, sender);
+            }
         }
     }
 
-    private static void tryTeleport(LocalPlayer player, Direction facing) {
+    private static void tryTeleport(LocalPlayer player, Direction facing, ClientPacketSender sender) {
         Level world = player.level();
 
         BlockPos fromPos = getOriginElevator(player);
@@ -52,7 +46,10 @@ public class ElevatorHandler {
 
         BlockPos.MutableBlockPos toPos = fromPos.mutable();
 
-        ElevatorBlock fromElevator = (ElevatorBlock) world.getBlockState(fromPos).getBlock();
+        var fromElevator = TeleportPacket.getElevator(world.getBlockState(fromPos));
+        if (fromElevator == null) {
+            return;
+        }
 
         while (true) {
             toPos.setY(toPos.getY() + facing.getStepY());
@@ -60,10 +57,10 @@ public class ElevatorHandler {
                 break;
             }
 
-            ElevatorBlock toElevator = TeleportHandler.getElevator(world.getBlockState(toPos));
-            if (toElevator != null && TeleportHandler.isValidPos(world, toPos)) {
+            var toElevator = TeleportPacket.getElevator(world.getBlockState(toPos));
+            if (toElevator != null && TeleportPacket.isValidPos(world, toPos)) {
                 if (!Config.GENERAL.sameColor.get() || fromElevator.getColor() == toElevator.getColor()) {
-                    ClientPlayNetworking.send(new TeleportRequest(fromPos, toPos));
+                    sender.sendToServer(new TeleportPacket(fromPos, toPos));
                     break;
                 }
             }
@@ -81,7 +78,7 @@ public class ElevatorHandler {
 
         // Check the player's feet and the 2 blocks under it
         for (int i = 0; i < 3; i++) {
-            if (TeleportHandler.getElevator(player.level().getBlockState(pos)) != null)
+            if (TeleportPacket.getElevator(player.level().getBlockState(pos)) != null)
                 return pos;
             pos = pos.below();
         }

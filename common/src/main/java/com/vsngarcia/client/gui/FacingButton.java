@@ -1,15 +1,14 @@
-package com.vsngarcia.neoforge.client.gui;
+package com.vsngarcia.client.gui;
 
-import com.vsngarcia.neoforge.network.client.SetFacingPacket;
+import com.vsngarcia.network.ClientPacketSender;
+import com.vsngarcia.network.client.SetFacingPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.network.PacketDistributor;
 
-import javax.annotation.Nonnull;
 import java.awt.*;
 
 
@@ -17,7 +16,7 @@ class FacingButton extends Button {
 
     final Direction direction;
 
-    FacingButton(Point slot, Direction direction, BlockPos pos) {
+    FacingButton(Point slot, Direction direction, BlockPos pos, ClientPacketSender packetSender) {
         super(
                 slot.x,
                 slot.y,
@@ -25,7 +24,7 @@ class FacingButton extends Button {
                 20,
                 Component.translatable("screen.elevatorid.elevator.directional_" + direction.getName()),
                 but -> {
-                    PacketDistributor.sendToServer(new SetFacingPacket(direction, pos));
+                    packetSender.sendToServer(new SetFacingPacket(direction, pos));
                     but.setFocused(false);
                 },
                 DEFAULT_NARRATION
@@ -35,7 +34,7 @@ class FacingButton extends Button {
     }
 
     @Override
-    public void renderWidget(@Nonnull GuiGraphics guiGraphics, int mouseX, int mouseY, float partial) {
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partial) {
         //RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         if (isHoveredOrFocused() && active) {
             guiGraphics.fill(getX(), getY(), getX() + width, getY() + height, -2130706433);

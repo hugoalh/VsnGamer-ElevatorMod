@@ -1,9 +1,6 @@
-package com.vsngarcia.fabric.tile;
+package com.vsngarcia.level;
 
-import com.vsngarcia.fabric.ElevatorBlock;
-import com.vsngarcia.fabric.FabricRegistry;
-import net.fabricmc.fabric.api.blockview.v2.RenderDataBlockEntity;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import com.vsngarcia.ElevatorBlockBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -15,27 +12,23 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
-
-import static com.vsngarcia.fabric.FabricRegistry.CAMOUFLAGE_SOUND;
 
 
-public class ElevatorTileEntity extends BlockEntity implements RenderDataBlockEntity, ExtendedScreenHandlerFactory<ElevatorContainer.ElevatorContainerData> {
+public abstract class ElevatorBlockEntityBase extends BlockEntity implements MenuProvider {
 
-    private BlockState heldState;
+    protected BlockState heldState;
 
-    public ElevatorTileEntity(BlockPos pos, BlockState state) {
-        super(FabricRegistry.ELEVATOR_BLOCK_ENTITY_TYPE, pos, state);
+    public ElevatorBlockEntityBase(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     @Override
@@ -70,12 +63,6 @@ public class ElevatorTileEntity extends BlockEntity implements RenderDataBlockEn
     }
 
     @Override
-    public @Nullable Object getRenderData() {
-        // TODO: Check if this is thread safe
-        return heldState;
-    }
-
-    @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider holder) {
         return saveCustomOnly(holder);
     }
@@ -85,20 +72,11 @@ public class ElevatorTileEntity extends BlockEntity implements RenderDataBlockEn
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-//    @Override
-//    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider holder) {
-//        handleUpdateTag(pkt.getTag(), holder);
-//    }
-
     @Override
     public Component getDisplayName() {
         return Component.translatable("screen.elevatorid.elevator");
     }
 
-    @Override
-    public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
-        return new ElevatorContainer(id, worldPosition, player);
-    }
 
     public void setHeldState(BlockState state) {
         this.heldState = state;
@@ -111,7 +89,8 @@ public class ElevatorTileEntity extends BlockEntity implements RenderDataBlockEn
 
         if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_ALL);
-            level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock());
+            level.updateNeighborsAt(getBlockPos(),  getBlockState().getBlock());
+            getBlockState().updateNeighbourShapes(level, getBlockPos(), 2);
             level.getLightEngine().checkBlock(getBlockPos());
         }
     }
@@ -127,13 +106,15 @@ public class ElevatorTileEntity extends BlockEntity implements RenderDataBlockEn
 
         setHeldState(newState);
         if (getLevel() != null) {
-            getLevel().playSound(null, getBlockPos(), CAMOUFLAGE_SOUND, SoundSource.BLOCKS, 1F, 1F);
+            getLevel().playSound(null, getBlockPos(), camouflageSound(), SoundSource.BLOCKS, 1F, 1F);
         }
 
         return true;
     }
 
-    public static boolean isValidState(BlockState state) {
+    protected abstract SoundEvent camouflageSound();
+
+    public boolean isValidState(BlockState state) {
         if (state == null) return true;
 
         if (state.getBlock() == Blocks.AIR) return false;
@@ -142,7 +123,7 @@ public class ElevatorTileEntity extends BlockEntity implements RenderDataBlockEn
 //        if (state.hasBlockEntity()) return false;
 
         // Don't try to camouflage with itself
-        if (state.getBlock() instanceof ElevatorBlock) {
+        if (state.getBlock() instanceof ElevatorBlockBase) {
             return false;
         }
 
@@ -152,11 +133,6 @@ public class ElevatorTileEntity extends BlockEntity implements RenderDataBlockEn
         }
 
         // Only blocks with a collision box
-        return !state.getCollisionShape(null, null).isEmpty();
-    }
-
-    @Override
-    public ElevatorContainer.ElevatorContainerData getScreenOpeningData(ServerPlayer player) {
-        return new ElevatorContainer.ElevatorContainerData(getBlockPos());
+        return !state.getCollisionShape(level, worldPosition).isEmpty();
     }
 }

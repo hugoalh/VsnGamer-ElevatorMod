@@ -1,15 +1,15 @@
-package com.vsngarcia.fabric.network.client;
+package com.vsngarcia.network.client;
 
+import com.vsngarcia.ElevatorBlockBase;
 import com.vsngarcia.ElevatorMod;
-import com.vsngarcia.fabric.ElevatorBlock;
-import com.vsngarcia.fabric.network.NetworkHandler;
+import com.vsngarcia.network.TeleportPacket;
 import io.netty.buffer.ByteBuf;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -31,17 +31,16 @@ public record SetDirectionalPacket(boolean value, BlockPos pos) implements Custo
     }
 
 
-    public static void handle(SetDirectionalPacket msg, ServerPlayNetworking.Context ctx) {
-        ctx.server().execute(() -> {
-            if (NetworkHandler.isBadClientPacket(ctx.player(), msg.pos))
-                return;
+    public static void handle(SetDirectionalPacket msg, ServerPlayer player) {
+        if (TeleportPacket.isBadClientPacket(player, msg.pos)) {
+            return;
+        }
 
-            Level world = ctx.player().level();
-            BlockState state = world.getBlockState(msg.pos);
-            if (state.getBlock() instanceof ElevatorBlock) {
-                world.setBlockAndUpdate(msg.pos, state.setValue(ElevatorBlock.DIRECTIONAL, msg.value));
-            }
-        });
+        Level world = player.level();
+        BlockState state = world.getBlockState(msg.pos);
+        if (state.getBlock() instanceof ElevatorBlockBase) {
+            world.setBlockAndUpdate(msg.pos, state.setValue(ElevatorBlockBase.DIRECTIONAL, msg.value));
+        }
     }
 }
 

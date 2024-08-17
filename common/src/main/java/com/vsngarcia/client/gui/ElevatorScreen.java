@@ -1,13 +1,13 @@
-package com.vsngarcia.fabric.client.gui;
+package com.vsngarcia.client.gui;
 
+import com.vsngarcia.ElevatorBlockBase;
 import com.vsngarcia.ElevatorMod;
-import com.vsngarcia.fabric.ElevatorBlock;
-import com.vsngarcia.fabric.network.client.RemoveCamoPacket;
-import com.vsngarcia.fabric.network.client.SetArrowPacket;
-import com.vsngarcia.fabric.network.client.SetDirectionalPacket;
-import com.vsngarcia.fabric.tile.ElevatorContainer;
-import com.vsngarcia.fabric.tile.ElevatorTileEntity;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import com.vsngarcia.level.ElevatorBlockEntityBase;
+import com.vsngarcia.network.ClientPacketSender;
+import com.vsngarcia.network.client.RemoveCamoPacket;
+import com.vsngarcia.network.client.SetArrowPacket;
+import com.vsngarcia.network.client.SetDirectionalPacket;
+import com.vsngarcia.level.ElevatorContainer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
@@ -16,29 +16,29 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import org.jetbrains.annotations.NotNull;
-
-import static com.vsngarcia.fabric.ElevatorBlock.*;
 
 
 public class ElevatorScreen extends AbstractContainerScreen<ElevatorContainer> {
 
     private final ResourceLocation GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(ElevatorMod.ID, "textures/gui/elevator_gui.png");
-    private final ElevatorTileEntity tile;
+    private final ElevatorBlockEntityBase tile;
     private final Direction playerFacing;
+    private final ClientPacketSender packetSender;
 
     private Checkbox dirButton;
     private Checkbox hideArrowButton;
     private Button resetCamoButton;
     private FacingControllerWrapper facingController;
 
-    public ElevatorScreen(ElevatorContainer container, Inventory inv, Component titleIn) {
+    public ElevatorScreen(ElevatorContainer container, Inventory inv, Component titleIn, ClientPacketSender pktSender) {
         super(container, inv, titleIn);
         imageWidth = 200;
         imageHeight = 100;
 
         tile = container.getTile();
         playerFacing = container.getPlayerFacing();
+
+        packetSender = pktSender;
     }
 
     @Override
@@ -48,43 +48,42 @@ public class ElevatorScreen extends AbstractContainerScreen<ElevatorContainer> {
         // Toggle directional button
         dirButton = Checkbox.builder(Component.translatable("screen.elevatorid.elevator.directional"), font)
                 .pos(leftPos + 8, topPos + 25)
-                .selected(tile.getBlockState().getValue(DIRECTIONAL))
-                .onValueChange((checkbox, selected) -> ClientPlayNetworking.send(new SetDirectionalPacket(selected, tile.getBlockPos())))
+                .selected(tile.getBlockState().getValue(ElevatorBlockBase.DIRECTIONAL))
+                .onValueChange((checkbox, selected) -> packetSender.sendToServer(new SetDirectionalPacket(selected, tile.getBlockPos())))
                 .build();
         addRenderableWidget(dirButton);
 
         // Toggle arrow button
         hideArrowButton = Checkbox.builder(Component.translatable("screen.elevatorid.elevator.hide_arrow"), font)
                 .pos(leftPos + 8, topPos + 50)
-                .selected(!tile.getBlockState().getValue(SHOW_ARROW))
-                .onValueChange((checkbox, selected) -> ClientPlayNetworking.send(new SetArrowPacket(!selected, tile.getBlockPos())))
+                .selected(!tile.getBlockState().getValue(ElevatorBlockBase.SHOW_ARROW))
+                .onValueChange((checkbox, selected) -> packetSender.sendToServer(new SetArrowPacket(!selected, tile.getBlockPos())))
                 .build();
-        hideArrowButton.visible = tile.getBlockState().getValue(DIRECTIONAL);
+        hideArrowButton.visible = tile.getBlockState().getValue(ElevatorBlockBase.DIRECTIONAL);
         addRenderableWidget(hideArrowButton);
 
         // Directional controller
-        facingController = new FacingControllerWrapper(leftPos + 120, topPos + 20, tile.getBlockPos(), playerFacing);
+        facingController = new FacingControllerWrapper(leftPos + 120, topPos + 20, tile.getBlockPos(), playerFacing, packetSender);
         facingController.getButtons().forEach(this::addRenderableWidget);
         facingController.getButtons().forEach(button -> {
-            button.visible = tile.getBlockState().getValue(DIRECTIONAL);
-            button.active = tile.getBlockState().getValue(FACING) != button.direction;
+            button.visible = tile.getBlockState().getValue(ElevatorBlockBase.DIRECTIONAL);
+            button.active = tile.getBlockState().getValue(ElevatorBlockBase.FACING) != button.direction;
         });
 
         // Reset camouflage button
         resetCamoButton = Button.builder(
                         Component.translatable("screen.elevatorid.elevator.reset_camo"),
-                        b -> ClientPlayNetworking.send(new RemoveCamoPacket(tile.getBlockPos()))
+                        but -> packetSender.sendToServer(new RemoveCamoPacket(tile.getBlockPos()))
                 )
                 .pos(leftPos + 8, topPos + 75)
                 .size(110, 20)
                 .build();
         addRenderableWidget(resetCamoButton);
-
         resetCamoButton.active = tile.getHeldState() != null;
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
@@ -92,21 +91,21 @@ public class ElevatorScreen extends AbstractContainerScreen<ElevatorContainer> {
     public void containerTick() {
         super.containerTick();
 
-        dirButton.selected = tile.getBlockState().getValue(ElevatorBlock.DIRECTIONAL);
+        dirButton.selected = tile.getBlockState().getValue(ElevatorBlockBase.DIRECTIONAL);
 
         facingController.getButtons().forEach(button -> {
-            button.visible = tile.getBlockState().getValue(ElevatorBlock.DIRECTIONAL);
-            button.active = tile.getBlockState().getValue(ElevatorBlock.FACING) != button.direction;
+            button.visible = tile.getBlockState().getValue(ElevatorBlockBase.DIRECTIONAL);
+            button.active = tile.getBlockState().getValue(ElevatorBlockBase.FACING) != button.direction;
         });
 
-        hideArrowButton.visible = tile.getBlockState().getValue(ElevatorBlock.DIRECTIONAL);
-        hideArrowButton.selected = !tile.getBlockState().getValue(ElevatorBlock.SHOW_ARROW);
+        hideArrowButton.visible = tile.getBlockState().getValue(ElevatorBlockBase.DIRECTIONAL);
+        hideArrowButton.selected = !tile.getBlockState().getValue(ElevatorBlockBase.SHOW_ARROW);
 
         resetCamoButton.active = tile.getHeldState() != null;
     }
 
     @Override
-    protected void renderBg(@NotNull GuiGraphics guiGraphics, float v, int mouseX, int mouseY) {
+    protected void renderBg(GuiGraphics guiGraphics, float v, int mouseX, int mouseY) {
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
         guiGraphics.blit(GUI_TEXTURE, relX, relY, 0, 0, this.imageWidth, this.imageHeight);

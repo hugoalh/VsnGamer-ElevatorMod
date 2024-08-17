@@ -1,19 +1,23 @@
 package com.vsngarcia.neoforge.client;
 
 import com.vsngarcia.ElevatorMod;
+import com.vsngarcia.client.ColorCamoElevator;
+import com.vsngarcia.level.ElevatorContainer;
 import com.vsngarcia.neoforge.ElevatorBlock;
-import com.vsngarcia.neoforge.client.gui.ElevatorScreen;
-import com.vsngarcia.neoforge.client.render.ColorCamoElevator;
+import com.vsngarcia.client.gui.ElevatorScreen;
 import com.vsngarcia.neoforge.client.render.ElevatorBakedModel;
 import com.vsngarcia.neoforge.init.Registry;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 
@@ -23,7 +27,8 @@ public class ClientRegistry {
     public static void onMenuScreensRegistry(RegisterMenuScreensEvent e) {
         e.register(
                 Registry.ELEVATOR_CONTAINER.get(),
-                ElevatorScreen::new
+                (ElevatorContainer container, Inventory inv, Component title) ->
+                        new ElevatorScreen(container, inv, title, PacketDistributor::sendToServer)
         );
     }
 

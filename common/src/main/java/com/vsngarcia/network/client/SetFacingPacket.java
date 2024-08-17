@@ -1,8 +1,8 @@
-package com.vsngarcia.neoforge.network.client;
+package com.vsngarcia.network.client;
 
+import com.vsngarcia.ElevatorBlockBase;
 import com.vsngarcia.ElevatorMod;
-import com.vsngarcia.neoforge.ElevatorBlock;
-import com.vsngarcia.neoforge.network.NetworkHandler;
+import com.vsngarcia.network.TeleportPacket;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -12,7 +12,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 
 public record SetFacingPacket(Direction direction, BlockPos pos) implements CustomPacketPayload {
@@ -31,17 +30,15 @@ public record SetFacingPacket(Direction direction, BlockPos pos) implements Cust
         return TYPE;
     }
 
-    public static void handle(SetFacingPacket msg, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            ServerPlayer player = (ServerPlayer) ctx.player();
-            if (NetworkHandler.isBadClientPacket(player, msg.pos))
-                return;
+    public static void handle(SetFacingPacket msg, ServerPlayer player) {
+        if (TeleportPacket.isBadClientPacket(player, msg.pos)) {
+            return;
+        }
 
-            Level world = player.level();
-            BlockState state = world.getBlockState(msg.pos);
-            if (state.getBlock() instanceof ElevatorBlock) {
-                world.setBlockAndUpdate(msg.pos, state.setValue(ElevatorBlock.FACING, msg.direction));
-            }
-        });
+        Level world = player.level();
+        BlockState state = world.getBlockState(msg.pos);
+        if (state.getBlock() instanceof ElevatorBlockBase) {
+            world.setBlockAndUpdate(msg.pos, state.setValue(ElevatorBlockBase.FACING, msg.direction));
+        }
     }
 }

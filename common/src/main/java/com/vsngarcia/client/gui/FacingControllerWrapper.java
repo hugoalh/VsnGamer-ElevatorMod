@@ -1,5 +1,6 @@
-package com.vsngarcia.neoforge.client.gui;
+package com.vsngarcia.client.gui;
 
+import com.vsngarcia.network.ClientPacketSender;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 
@@ -13,9 +14,9 @@ class FacingControllerWrapper {
     private final HashSet<FacingButton> bakedButtons = new HashSet<>();
     private final ArrayList<Point> slots = new ArrayList<>();
 
-    FacingControllerWrapper(int xIn, int yIn, BlockPos blockPos, Direction playerFacing) {
+    FacingControllerWrapper(int xIn, int yIn, BlockPos blockPos, Direction playerFacing, ClientPacketSender packetSender) {
         initSlots(xIn, yIn);
-        initButtons(playerFacing, blockPos);
+        initButtons(playerFacing, blockPos, packetSender);
     }
 
     private void initSlots(int xIn, int yIn) {
@@ -25,12 +26,12 @@ class FacingControllerWrapper {
         slots.add(new Point(xIn, yIn + 20)); //LEFT
     }
 
-    private void initButtons(Direction playerFacing, BlockPos pos) {
+    private void initButtons(Direction playerFacing, BlockPos pos, ClientPacketSender packetSender) {
         Collections.rotate(slots, playerFacing.get2DDataValue()); // Modifies list
-        bakedButtons.add(new FacingButton(slots.get(0), Direction.SOUTH, pos));
-        bakedButtons.add(new FacingButton(slots.get(1), Direction.WEST, pos));
-        bakedButtons.add(new FacingButton(slots.get(2), Direction.NORTH, pos));
-        bakedButtons.add(new FacingButton(slots.get(3), Direction.EAST, pos));
+        bakedButtons.add(new FacingButton(slots.get(0), Direction.SOUTH, pos, packetSender));
+        bakedButtons.add(new FacingButton(slots.get(1), Direction.WEST, pos, packetSender));
+        bakedButtons.add(new FacingButton(slots.get(2), Direction.NORTH, pos, packetSender));
+        bakedButtons.add(new FacingButton(slots.get(3), Direction.EAST, pos, packetSender));
     }
 
     HashSet<FacingButton> getButtons() {

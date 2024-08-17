@@ -1,31 +1,29 @@
-package com.vsngarcia.neoforge.tile;
+package com.vsngarcia.level;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
-
-import static com.vsngarcia.neoforge.init.Registry.ELEVATOR_CONTAINER;
 
 public class ElevatorContainer extends AbstractContainerMenu {
 
     private final Direction playerFacing;
-    private ElevatorTileEntity elevatorTile;
+    private ElevatorBlockEntityBase elevatorTile;
     private final BlockPos pos;
 
-    public ElevatorContainer(int id, BlockPos pos, Player player) {
-        super(ELEVATOR_CONTAINER.get(), id);
+    public ElevatorContainer(MenuType<ElevatorContainer> menuType, int id, BlockPos pos, Player player) {
+        super(menuType, id);
 
         // TODO: 08/06/2023 Check if this is the correct way to get the level
         BlockEntity tile = player.level().getBlockEntity(pos);
-        if (tile instanceof ElevatorTileEntity)
-            elevatorTile = (ElevatorTileEntity) tile;
+        if (tile instanceof ElevatorBlockEntityBase)
+            elevatorTile = (ElevatorBlockEntityBase) tile;
 
         playerFacing = player.getDirection();
         this.pos = pos;
@@ -38,7 +36,7 @@ public class ElevatorContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(@Nonnull Player playerIn) {
+    public boolean stillValid(Player playerIn) {
         return stillValid(ContainerLevelAccess.create(playerIn.level(), elevatorTile.getBlockPos()), playerIn, elevatorTile.getBlockState().getBlock());
     }
 
@@ -46,7 +44,7 @@ public class ElevatorContainer extends AbstractContainerMenu {
         return pos;
     }
 
-    public ElevatorTileEntity getTile() {
+    public ElevatorBlockEntityBase getTile() {
         return elevatorTile;
     }
 

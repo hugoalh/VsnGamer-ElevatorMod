@@ -1,19 +1,18 @@
 package com.vsngarcia.fabric;
 
 import com.vsngarcia.ElevatorMod;
-import com.vsngarcia.fabric.tile.ElevatorContainer;
-import com.vsngarcia.fabric.tile.ElevatorTileEntity;
+import com.vsngarcia.fabric.tile.ElevatorBlockEntity;
+import com.vsngarcia.level.ElevatorContainer;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.flag.FeatureFlags;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
@@ -57,21 +56,22 @@ public class FabricRegistry {
         );
     }
 
-    public static final BlockEntityType<ElevatorTileEntity> ELEVATOR_BLOCK_ENTITY_TYPE = Registry.register(
+    public static final BlockEntityType<ElevatorBlockEntity> ELEVATOR_BLOCK_ENTITY_TYPE = Registry.register(
             BuiltInRegistries.BLOCK_ENTITY_TYPE,
             ResourceLocation.fromNamespaceAndPath(ElevatorMod.ID, "elevator_tile"),
             BlockEntityType.Builder.of(
-                    ElevatorTileEntity::new, ELEVATOR_BLOCKS.values().toArray(new Block[0])
+                    ElevatorBlockEntity::new, ELEVATOR_BLOCKS.values().toArray(new Block[0])
             ).build(null)
     );
 
-    public static final ExtendedScreenHandlerType<ElevatorContainer, ElevatorContainer.ElevatorContainerData> ELEVATOR_CONTAINER =
-            new ExtendedScreenHandlerType<>(
-                    (syncId, inventory, data) -> new ElevatorContainer(syncId, data.pos(), inventory.player),
-                    ElevatorContainer.ElevatorContainerData.CODEC
-            );
+    public static ExtendedScreenHandlerType<ElevatorContainer, ElevatorContainerData> ELEVATOR_CONTAINER = null;
 
     static {
+        ELEVATOR_CONTAINER = new ExtendedScreenHandlerType<>(
+                (syncId, inventory, data) -> new ElevatorContainer(ELEVATOR_CONTAINER, syncId, data.pos(), inventory.player),
+                ElevatorContainerData.CODEC
+        );
+
         Registry.register(
                 BuiltInRegistries.MENU,
                 ResourceLocation.fromNamespaceAndPath(ElevatorMod.ID, "elevator_container"),
@@ -106,4 +106,10 @@ public class FabricRegistry {
     public static void init() {
         // Register our items and blocks here.
     }
+
+    public record ElevatorContainerData(BlockPos pos) {
+        public static final StreamCodec<RegistryFriendlyByteBuf, ElevatorContainerData> CODEC =
+                StreamCodec.composite(BlockPos.STREAM_CODEC, ElevatorContainerData::pos, ElevatorContainerData::new);
+    }
 }
+

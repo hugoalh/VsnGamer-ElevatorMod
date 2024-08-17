@@ -2,8 +2,8 @@ package com.vsngarcia.neoforge.init;
 
 import com.vsngarcia.ElevatorMod;
 import com.vsngarcia.neoforge.ElevatorBlock;
-import com.vsngarcia.neoforge.tile.ElevatorContainer;
-import com.vsngarcia.neoforge.tile.ElevatorTileEntity;
+import com.vsngarcia.neoforge.tile.ElevatorBlockEntity;
+import com.vsngarcia.level.ElevatorContainer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -35,10 +35,10 @@ public class Registry {
     }
 
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, ElevatorMod.ID);
-    public static final Supplier<BlockEntityType<ElevatorTileEntity>> ELEVATOR_TILE_ENTITY = BLOCK_ENTITIES.register(
+    public static final Supplier<BlockEntityType<ElevatorBlockEntity>> ELEVATOR_TILE_ENTITY = BLOCK_ENTITIES.register(
             "elevator_tile",
             () -> BlockEntityType.Builder.of(
-                    ElevatorTileEntity::new,
+                    ElevatorBlockEntity::new,
                     ELEVATOR_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)
             ).build(null)
     );
@@ -53,12 +53,15 @@ public class Registry {
     }
 
     private static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(Registries.MENU, ElevatorMod.ID);
-    public static final Supplier<MenuType<ElevatorContainer>> ELEVATOR_CONTAINER = CONTAINERS.register(
-            "elevator_container", () ->
-                    IMenuTypeExtension.create((windowId, inv, data) ->
-                            new ElevatorContainer(windowId, data.readBlockPos(), inv.player)
-                    )
-    );
+    public static Supplier<MenuType<ElevatorContainer>> ELEVATOR_CONTAINER = null;
+    static {
+        ELEVATOR_CONTAINER = CONTAINERS.register(
+                "elevator_container", () ->
+                        IMenuTypeExtension.create((windowId, inv, data) ->
+                                new ElevatorContainer(ELEVATOR_CONTAINER.get(), windowId, data.readBlockPos(), inv.player)
+                        )
+        );
+    }
 
     private static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, ElevatorMod.ID);
     public static final Supplier<SoundEvent> TELEPORT_SOUND = SOUNDS.register(
