@@ -146,23 +146,18 @@ public abstract class ElevatorBlockBase extends HorizontalDirectionalBlock imple
 
     @Override
     public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
-//        if (!worldIn.isClientSide()) {
         getElevatorTile(worldIn, currentPos)
-                .map(t -> {
+                .ifPresent(t -> {
                     if (t.getHeldState() == null) {
-                        return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+                        return;
                     }
 
-                    BlockState appearance = getAppearance(facingState, worldIn, facingPos, facing.getOpposite(), t.getHeldState(), currentPos);
+                    BlockState appearance = getAppearance(facingState, worldIn, facingPos, facing, t.getHeldState(), currentPos);
                     BlockState updatedState = t.getHeldState().updateShape(facing, appearance, worldIn, currentPos, facingPos);
-                    if (updatedState != t.getHeldState()) {
+                    if (!updatedState.equals(t.getHeldState())) {
                         t.setHeldState(updatedState);
-                        t.setChanged();
                     }
-
-                    return updatedState;
                 });
-//        }
 
         return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }

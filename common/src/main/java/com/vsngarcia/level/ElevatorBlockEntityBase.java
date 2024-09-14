@@ -2,6 +2,7 @@ package com.vsngarcia.level;
 
 import com.vsngarcia.ElevatorBlockBase;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -89,9 +90,24 @@ public abstract class ElevatorBlockEntityBase extends BlockEntity implements Men
 
         if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_ALL);
-            level.updateNeighborsAt(getBlockPos(),  getBlockState().getBlock());
-            getBlockState().updateNeighbourShapes(level, getBlockPos(), 2);
             level.getLightEngine().checkBlock(getBlockPos());
+            level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock());
+
+            // Hack to update our own shape. For example, connect to other elevator camouflaged as a fence
+            // Vanilla blocks' getStateForPlacement should be patched to use getAppearance, making this unnecessary
+            // Also doesn't fix vanilla blocks not connecting to us, their updateShape should also be patched
+            getBlockState().updateNeighbourShapes(level, getBlockPos(), 0);
+            if (heldState != null) {
+                for (Direction direction : Direction.values()) {
+                    getBlockState().updateShape(
+                            direction,
+                            level.getBlockState(getBlockPos().relative(direction)),
+                            level,
+                            getBlockPos(),
+                            getBlockPos().relative(direction)
+                    );
+                }
+            }
         }
     }
 
