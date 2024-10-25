@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -39,7 +38,6 @@ public class ElevatorBlock extends ElevatorBlockBase {
         return CODEC;
     }
 
-    @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new ElevatorBlockEntity(pos, state);
@@ -58,7 +56,7 @@ public class ElevatorBlock extends ElevatorBlockBase {
     }
 
     @Override
-    public float getFriction(BlockState state, LevelReader level, BlockPos pos, @Nullable Entity entity) {
+    public float getFriction(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
         return getHeldState(level, pos)
                 .map(s -> s.getFriction(level, pos, entity))
                 .orElse(super.getFriction(state, level, pos, entity));
@@ -85,8 +83,9 @@ public class ElevatorBlock extends ElevatorBlockBase {
         return heldState.getAppearance(level, pos, side, queryState, queryPos);
     }
 
+
     @Override
-    protected BlockState getAppearance(BlockState facingState, LevelAccessor worldIn, BlockPos facingPos, Direction opposite, BlockState heldState, BlockPos currentPos) {
+    protected BlockState getAppearance(BlockState facingState, LevelReader worldIn, BlockPos facingPos, Direction opposite, BlockState heldState, BlockPos currentPos) {
         return facingState.getAppearance(worldIn, facingPos, opposite, heldState, currentPos);
     }
 
@@ -127,7 +126,7 @@ public class ElevatorBlock extends ElevatorBlockBase {
     }
 
     @Override
-    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
+    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
         return getHeldState(level, pos)
                 .map(s -> s.getBlock().canConnectRedstone(s, level, pos, direction))
                 .orElse(super.canConnectRedstone(state, level, pos, direction));
@@ -141,7 +140,7 @@ public class ElevatorBlock extends ElevatorBlockBase {
     }
 
     @Override
-    public SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, @Nullable Entity entity) {
+    public SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
         return getHeldState(level, pos)
                 .map(s -> s.getSoundType(level, pos, entity))
                 .orElse(super.getSoundType(state, level, pos, entity));

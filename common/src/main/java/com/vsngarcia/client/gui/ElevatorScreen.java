@@ -12,6 +12,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -106,9 +107,18 @@ public class ElevatorScreen extends AbstractContainerScreen<ElevatorContainer> {
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float v, int mouseX, int mouseY) {
-        int relX = (this.width - this.imageWidth) / 2;
-        int relY = (this.height - this.imageHeight) / 2;
-        guiGraphics.blit(GUI_TEXTURE, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(
+                RenderType::guiTextured,
+                GUI_TEXTURE,
+                (this.width - this.imageWidth) / 2,
+                (this.height - this.imageHeight) / 2,
+                0,
+                0,
+                this.imageWidth,
+                this.imageHeight,
+                256,
+                256
+        );
     }
 
     @Override

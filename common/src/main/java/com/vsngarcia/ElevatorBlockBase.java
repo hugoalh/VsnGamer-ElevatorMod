@@ -4,14 +4,22 @@ import com.vsngarcia.level.ElevatorBlockEntityBase;
 import com.vsngarcia.util.FakeUseContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.*;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -47,6 +55,7 @@ public abstract class ElevatorBlockBase extends HorizontalDirectionalBlock imple
                         .dynamicShape()
                         .noOcclusion()
                         .isValidSpawn(isValidSpawn(type))
+                        .setId(getResourceKey(Registries.BLOCK, color))
 //                .forceSolidOn()
         );
 
@@ -59,6 +68,17 @@ public abstract class ElevatorBlockBase extends HorizontalDirectionalBlock imple
 
         dyeColor = color;
         tileEntityType = type;
+    }
+
+    public static <T> ResourceKey<T> getResourceKey(ResourceKey<Registry<T>> type, DyeColor color) {
+        return ResourceKey.create(
+                type,
+                getResourceLocation(color)
+        );
+    }
+
+    public static ResourceLocation getResourceLocation(DyeColor color) {
+        return ResourceLocation.fromNamespaceAndPath(ElevatorMod.ID, "elevator_" + color.getName());
     }
 
     @Override
@@ -75,28 +95,26 @@ public abstract class ElevatorBlockBase extends HorizontalDirectionalBlock imple
     protected abstract void openMenu(Player player, ElevatorBlockEntityBase tile, BlockPos pos);
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+    public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         if (worldIn.isClientSide) {
-            return ItemInteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
-        return getElevatorTile(worldIn, pos)
-                .map(tile -> {
-                    Block handBlock = Block.byItem(player.getItemInHand(handIn).getItem());
-                    BlockState stateToApply = handBlock.getStateForPlacement(new FakeUseContext(player, handIn, hit));
-                    if (stateToApply != null && tile.setCamoAndUpdate(stateToApply))
-                        return ItemInteractionResult.SUCCESS; // If we successfully set camo, don't open the menu
+        return getElevatorTile(worldIn, pos).<InteractionResult>map(tile -> {
+            Block handBlock = Block.byItem(player.getItemInHand(handIn).getItem());
+            BlockState stateToApply = handBlock.getStateForPlacement(new FakeUseContext(player, handIn, hit));
+            if (stateToApply != null && tile.setCamoAndUpdate(stateToApply))
+                return InteractionResult.SUCCESS_SERVER; // If we successfully set camo, don't open the menu
 
-                    // Remove camo
-                    if (player.isCrouching() && tile.getHeldState() != null) {
-                        tile.setCamoAndUpdate(null);
-                        return ItemInteractionResult.SUCCESS;
-                    }
+            // Remove camo
+            if (player.isCrouching() && tile.getHeldState() != null) {
+                tile.setCamoAndUpdate(null);
+                return InteractionResult.SUCCESS_SERVER;
+            }
 
-                    openMenu(player, tile, pos);
-                    return ItemInteractionResult.SUCCESS;
-                })
-                .orElse(ItemInteractionResult.FAIL);
+            openMenu(player, tile, pos);
+            return InteractionResult.SUCCESS_SERVER;
+        }).orElse(InteractionResult.PASS);
     }
 
     public static StateArgumentPredicate<EntityType<?>> isValidSpawn(Supplier<BlockEntityType<? extends ElevatorBlockEntityBase>> tileType) {
@@ -145,24 +163,48 @@ public abstract class ElevatorBlockBase extends HorizontalDirectionalBlock imple
 
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
-        getElevatorTile(worldIn, currentPos)
+    protected BlockState updateShape(
+            BlockState blockState,
+            LevelReader levelReader,
+            ScheduledTickAccess scheduledTickAccess,
+            BlockPos currentPos,
+            Direction direction,
+            BlockPos facingPos,
+            BlockState facingState,
+            RandomSource randomSource
+    ) {
+        getElevatorTile(levelReader, currentPos)
                 .ifPresent(t -> {
                     if (t.getHeldState() == null) {
                         return;
                     }
 
-                    BlockState appearance = getAppearance(facingState, worldIn, facingPos, facing, t.getHeldState(), currentPos);
-                    BlockState updatedState = t.getHeldState().updateShape(facing, appearance, worldIn, currentPos, facingPos);
+                    BlockState appearance = getAppearance(
+                            facingState,
+                            levelReader,
+                            facingPos,
+                            direction,
+                            t.getHeldState(),
+                            currentPos
+                    );
+                    BlockState updatedState = t.getHeldState().updateShape(
+                            levelReader,
+                            scheduledTickAccess,
+                            currentPos,
+                            direction,
+                            facingPos,
+                            appearance,
+                            randomSource
+                    );
                     if (!updatedState.equals(t.getHeldState())) {
                         t.setHeldState(updatedState);
                     }
                 });
 
-        return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+        return super.updateShape(blockState, levelReader, scheduledTickAccess, currentPos, direction, facingPos, facingState, randomSource);
     }
 
-    protected abstract BlockState getAppearance(BlockState facingState, LevelAccessor worldIn, BlockPos facingPos, Direction opposite, BlockState heldState, BlockPos currentPos);
+    protected abstract BlockState getAppearance(BlockState facingState, LevelReader worldIn, BlockPos facingPos, Direction opposite, BlockState heldState, BlockPos currentPos);
 
     // Redstone
     @Override
@@ -192,16 +234,22 @@ public abstract class ElevatorBlockBase extends HorizontalDirectionalBlock imple
     }
 
     @Override
-    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
+    protected boolean propagatesSkylightDown(BlockState blockState) {
         return true;
     }
 
     @Override
-    public int getLightBlock(BlockState state, BlockGetter worldIn, BlockPos pos) {
-        return getHeldState(worldIn, pos)
-                .map(s -> s.getLightBlock(worldIn, pos))
-                .orElse(worldIn.getMaxLightLevel());
+    protected int getLightBlock(BlockState blockState) {
+        // TODO: Not dynamic
+        return super.getLightBlock(blockState);
     }
+
+//    @Override
+//    public int getLightBlock(BlockState state, BlockGetter worldIn, BlockPos pos) {
+//        return getHeldState(worldIn, pos)
+//                .map(s -> s.getLightBlock(worldIn, pos))
+//                .orElse(worldIn.getMaxLightLevel());
+//    }
 
     @Override
     protected float getShadeBrightness(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos) {
@@ -211,11 +259,17 @@ public abstract class ElevatorBlockBase extends HorizontalDirectionalBlock imple
     }
 
     @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter world, BlockPos pos) {
-        return getHeldState(world, pos)
-                .map(s -> s.getOcclusionShape(world, pos))
-                .orElse(super.getOcclusionShape(state, world, pos));
+    protected VoxelShape getOcclusionShape(BlockState blockState) {
+        // TODO: Not dynamic
+        return super.getOcclusionShape(blockState);
     }
+
+//    @Override
+//    public VoxelShape getOcclusionShape(BlockState state, BlockGetter world, BlockPos pos) {
+//        return getHeldState(world, pos)
+//                .map(s -> s.getOcclusionShape(world, pos))
+//                .orElse(super.getOcclusionShape(state, world, pos));
+//    }
 
     public DyeColor getColor() {
         return dyeColor;

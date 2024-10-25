@@ -38,7 +38,7 @@ public abstract class ElevatorBlockEntityBase extends BlockEntity implements Men
         if (tag.contains("held_id", Tag.TAG_COMPOUND)) {
             // Get blockstate from compound, always check if it's valid
             BlockState state = NbtUtils.readBlockState(
-                    this.level != null ? this.level.holderLookup(Registries.BLOCK) : BuiltInRegistries.BLOCK.asLookup(),
+                    this.level != null ? this.level.holderLookup(Registries.BLOCK) : BuiltInRegistries.BLOCK,
                     tag.getCompound("held_id")
             );
             heldState = isValidState(state) ? state : null;
@@ -100,11 +100,13 @@ public abstract class ElevatorBlockEntityBase extends BlockEntity implements Men
             if (heldState != null) {
                 for (Direction direction : Direction.values()) {
                     getBlockState().updateShape(
-                            direction,
-                            level.getBlockState(getBlockPos().relative(direction)),
+                            level,
                             level,
                             getBlockPos(),
-                            getBlockPos().relative(direction)
+                            direction,
+                            getBlockPos().relative(direction),
+                            level.getBlockState(getBlockPos().relative(direction)),
+                            level.random
                     );
                 }
             }

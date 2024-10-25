@@ -44,7 +44,7 @@ public final class ElevatorModFabricClient implements ClientModInitializer {
 
     public static class ElevatorModelLoadingPlugin implements ModelLoadingPlugin {
         @Override
-        public void onInitializeModelLoader(Context ctx) {
+        public void initialize(Context ctx) {
             ctx.modifyModelAfterBake().register(
                     (model, context) -> {
                         ModelResourceLocation location = context.topLevelId();

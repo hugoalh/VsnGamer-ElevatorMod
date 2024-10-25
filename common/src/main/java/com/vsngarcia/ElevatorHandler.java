@@ -19,7 +19,7 @@ public class ElevatorHandler {
         if (player == null || player.isSpectator() || !player.isAlive() || player.input == null)
             return;
 
-        boolean sneaking = player.input.shiftKeyDown;
+        boolean sneaking = player.input.keyPresses.shift();
         if (lastSneaking != sneaking) {
             lastSneaking = sneaking;
             if (sneaking) {
@@ -27,7 +27,7 @@ public class ElevatorHandler {
             }
         }
 
-        boolean jumping = player.input.jumping;
+        boolean jumping = player.input.keyPresses.jump();
         if (lastJumping != jumping) {
             lastJumping = jumping;
             if (jumping) {

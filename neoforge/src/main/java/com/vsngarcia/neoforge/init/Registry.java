@@ -37,10 +37,10 @@ public class Registry {
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, ElevatorMod.ID);
     public static final Supplier<BlockEntityType<ElevatorBlockEntity>> ELEVATOR_TILE_ENTITY = BLOCK_ENTITIES.register(
             "elevator_tile",
-            () -> BlockEntityType.Builder.of(
+            () -> new BlockEntityType<>(
                     ElevatorBlockEntity::new,
                     ELEVATOR_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)
-            ).build(null)
+            )
     );
 
     public static final EnumMap<DyeColor, DeferredItem<BlockItem>> ELEVATOR_ITEMS = new EnumMap<>(DyeColor.class);
@@ -54,6 +54,7 @@ public class Registry {
 
     private static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(Registries.MENU, ElevatorMod.ID);
     public static Supplier<MenuType<ElevatorContainer>> ELEVATOR_CONTAINER = null;
+
     static {
         ELEVATOR_CONTAINER = CONTAINERS.register(
                 "elevator_container", () ->

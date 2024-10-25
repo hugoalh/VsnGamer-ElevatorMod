@@ -3,15 +3,15 @@ package com.vsngarcia.fabric;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.vsngarcia.ElevatorBlockBase;
-import com.vsngarcia.level.ElevatorBlockEntityBase;
 import com.vsngarcia.fabric.tile.ElevatorBlockEntity;
+import com.vsngarcia.level.ElevatorBlockEntityBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -33,7 +33,7 @@ public class ElevatorBlock extends ElevatorBlockBase {
     }
 
     @Override
-    protected BlockState getAppearance(BlockState facingState, LevelAccessor worldIn, BlockPos facingPos, Direction opposite, BlockState heldState, BlockPos currentPos) {
+    protected BlockState getAppearance(BlockState facingState, LevelReader worldIn, BlockPos facingPos, Direction opposite, BlockState heldState, BlockPos currentPos) {
         return facingState.getAppearance(worldIn, facingPos, opposite, heldState, currentPos);
     }
 

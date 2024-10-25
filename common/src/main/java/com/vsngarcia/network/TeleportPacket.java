@@ -16,14 +16,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.EnumSet;
+import java.util.Set;
 
 public record TeleportPacket(BlockPos from, BlockPos to) implements CustomPacketPayload {
     public static final Type<TeleportPacket> TYPE = new Type<>(
@@ -87,7 +86,7 @@ public record TeleportPacket(BlockPos from, BlockPos to) implements CustomPacket
         }
 
         double blockYOffset = toState.getBlockSupportShape(world, toPos).max(Direction.Axis.Y);
-        player.teleportTo(world, toX, Math.max(toPos.getY(), toPos.getY() + blockYOffset), toZ, EnumSet.noneOf(RelativeMovement.class), yaw, pitch);
+        player.teleportTo(world, toX, Math.max(toPos.getY(), toPos.getY() + blockYOffset), toZ, Set.of(), yaw, pitch, true);
         player.setDeltaMovement(player.getDeltaMovement().multiply(new Vec3(1D, 0D, 1D)));
 
         world.playSound(null, toPos, soundEvent, SoundSource.BLOCKS, 1F, 1F);
