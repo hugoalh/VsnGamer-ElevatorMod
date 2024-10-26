@@ -71,9 +71,10 @@ public record TeleportPacket(BlockPos from, BlockPos to) implements CustomPacket
         final float yaw = toState.getValue(ElevatorBlockBase.DIRECTIONAL)
                 ? toState.getValue(ElevatorBlockBase.FACING).toYRot() : player.getYRot();
 
-        final float pitch = (toState.getValue(ElevatorBlockBase.DIRECTIONAL) && Config.GENERAL.resetPitchDirectional.get())
-                || (!toState.getValue(ElevatorBlockBase.DIRECTIONAL) && Config.GENERAL.resetPitchNormal.get())
-                ? 0F : player.getXRot();
+        final float pitch =
+                (toState.getValue(ElevatorBlockBase.DIRECTIONAL) && Config.GENERAL.resetPitchDirectional.get())
+                        || (!toState.getValue(ElevatorBlockBase.DIRECTIONAL) && Config.GENERAL.resetPitchNormal.get())
+                        ? 0F : player.getXRot();
 
         // Check X and Z
         final double toX, toZ;
@@ -86,7 +87,16 @@ public record TeleportPacket(BlockPos from, BlockPos to) implements CustomPacket
         }
 
         double blockYOffset = toState.getBlockSupportShape(world, toPos).max(Direction.Axis.Y);
-        player.teleportTo(world, toX, Math.max(toPos.getY(), toPos.getY() + blockYOffset), toZ, Set.of(), yaw, pitch, true);
+        player.teleportTo(
+                world,
+                toX,
+                Math.max(toPos.getY(), toPos.getY() + blockYOffset),
+                toZ,
+                Set.of(),
+                yaw,
+                pitch,
+                true
+        );
         player.setDeltaMovement(player.getDeltaMovement().multiply(new Vec3(1D, 0D, 1D)));
 
         world.playSound(null, toPos, soundEvent, SoundSource.BLOCKS, 1F, 1F);

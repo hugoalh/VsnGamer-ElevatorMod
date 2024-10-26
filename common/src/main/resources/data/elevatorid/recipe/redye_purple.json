@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "group": "elevatorsRedye",
   "ingredients": [
-    {
-      "tag": "elevatorid:elevators"
-    },
-    {
-      "tag": "c:dyes/purple"
-    }
+    "#elevatorid:elevators",
+    "#c:dyes/purple"
   ],
   "result": {
     "id": "elevatorid:elevator_purple"

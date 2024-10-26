@@ -15,7 +15,10 @@ import net.minecraft.world.level.block.state.BlockState;
 
 
 public record SetArrowPacket(boolean value, BlockPos pos) implements CustomPacketPayload {
-    public static final Type<SetArrowPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ElevatorMod.ID, "set_arrow"));
+    public static final Type<SetArrowPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(
+            ElevatorMod.ID,
+            "set_arrow"
+    ));
 
     public static final StreamCodec<ByteBuf, SetArrowPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL,
@@ -31,14 +34,14 @@ public record SetArrowPacket(boolean value, BlockPos pos) implements CustomPacke
     }
 
     public static void handle(SetArrowPacket msg, ServerPlayer player) {
-            if (TeleportPacket.isBadClientPacket(player, msg.pos)) {
-                return;
-            }
+        if (TeleportPacket.isBadClientPacket(player, msg.pos)) {
+            return;
+        }
 
-            Level world = player.level();
-            BlockState state = world.getBlockState(msg.pos);
-            if (state.getBlock() instanceof ElevatorBlockBase) {
-                world.setBlockAndUpdate(msg.pos, state.setValue(ElevatorBlockBase.SHOW_ARROW, msg.value));
-            }
+        Level world = player.level();
+        BlockState state = world.getBlockState(msg.pos);
+        if (state.getBlock() instanceof ElevatorBlockBase) {
+            world.setBlockAndUpdate(msg.pos, state.setValue(ElevatorBlockBase.SHOW_ARROW, msg.value));
+        }
     }
 }

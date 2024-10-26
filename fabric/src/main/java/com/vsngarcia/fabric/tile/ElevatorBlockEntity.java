@@ -1,7 +1,8 @@
 package com.vsngarcia.fabric.tile;
 
-import com.vsngarcia.level.ElevatorBlockEntityBase;
+import com.vsngarcia.fabric.ElevatorBlock;
 import com.vsngarcia.fabric.FabricRegistry;
+import com.vsngarcia.level.ElevatorBlockEntityBase;
 import com.vsngarcia.level.ElevatorContainer;
 import net.fabricmc.fabric.api.blockview.v2.RenderDataBlockEntity;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
@@ -39,5 +40,18 @@ public class ElevatorBlockEntity extends ElevatorBlockEntityBase implements Rend
     @Override
     public FabricRegistry.ElevatorContainerData getScreenOpeningData(ServerPlayer player) {
         return new FabricRegistry.ElevatorContainerData(worldPosition);
+    }
+
+    @Override
+    public void setChanged() {
+        super.setChanged();
+
+        if (level != null) {
+            level.setBlock(
+                    worldPosition,
+                    getBlockState().setValue(ElevatorBlock.LIGHT, heldState != null ? heldState.getLightEmission() : 0),
+                    ElevatorBlock.UPDATE_ALL
+            );
+        }
     }
 }

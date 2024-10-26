@@ -3,11 +3,11 @@ package com.vsngarcia.client.gui;
 import com.vsngarcia.ElevatorBlockBase;
 import com.vsngarcia.ElevatorMod;
 import com.vsngarcia.level.ElevatorBlockEntityBase;
+import com.vsngarcia.level.ElevatorContainer;
 import com.vsngarcia.network.ClientPacketSender;
 import com.vsngarcia.network.client.RemoveCamoPacket;
 import com.vsngarcia.network.client.SetArrowPacket;
 import com.vsngarcia.network.client.SetDirectionalPacket;
-import com.vsngarcia.level.ElevatorContainer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
@@ -21,7 +21,10 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class ElevatorScreen extends AbstractContainerScreen<ElevatorContainer> {
 
-    private final ResourceLocation GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(ElevatorMod.ID, "textures/gui/elevator_gui.png");
+    private final ResourceLocation GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(
+            ElevatorMod.ID,
+            "textures/gui/elevator_gui.png"
+    );
     private final ElevatorBlockEntityBase tile;
     private final Direction playerFacing;
     private final ClientPacketSender packetSender;
@@ -50,7 +53,10 @@ public class ElevatorScreen extends AbstractContainerScreen<ElevatorContainer> {
         dirButton = Checkbox.builder(Component.translatable("screen.elevatorid.elevator.directional"), font)
                 .pos(leftPos + 8, topPos + 25)
                 .selected(tile.getBlockState().getValue(ElevatorBlockBase.DIRECTIONAL))
-                .onValueChange((checkbox, selected) -> packetSender.sendToServer(new SetDirectionalPacket(selected, tile.getBlockPos())))
+                .onValueChange((checkbox, selected) -> packetSender.sendToServer(new SetDirectionalPacket(
+                        selected,
+                        tile.getBlockPos()
+                )))
                 .build();
         addRenderableWidget(dirButton);
 
@@ -58,13 +64,22 @@ public class ElevatorScreen extends AbstractContainerScreen<ElevatorContainer> {
         hideArrowButton = Checkbox.builder(Component.translatable("screen.elevatorid.elevator.hide_arrow"), font)
                 .pos(leftPos + 8, topPos + 50)
                 .selected(!tile.getBlockState().getValue(ElevatorBlockBase.SHOW_ARROW))
-                .onValueChange((checkbox, selected) -> packetSender.sendToServer(new SetArrowPacket(!selected, tile.getBlockPos())))
+                .onValueChange((checkbox, selected) -> packetSender.sendToServer(new SetArrowPacket(
+                        !selected,
+                        tile.getBlockPos()
+                )))
                 .build();
         hideArrowButton.visible = tile.getBlockState().getValue(ElevatorBlockBase.DIRECTIONAL);
         addRenderableWidget(hideArrowButton);
 
         // Directional controller
-        facingController = new FacingControllerWrapper(leftPos + 120, topPos + 20, tile.getBlockPos(), playerFacing, packetSender);
+        facingController = new FacingControllerWrapper(
+                leftPos + 120,
+                topPos + 20,
+                tile.getBlockPos(),
+                playerFacing,
+                packetSender
+        );
         facingController.getButtons().forEach(this::addRenderableWidget);
         facingController.getButtons().forEach(button -> {
             button.visible = tile.getBlockState().getValue(ElevatorBlockBase.DIRECTIONAL);

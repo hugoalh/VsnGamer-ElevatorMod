@@ -7,12 +7,8 @@
     "WWW"
   ],
   "key": {
-    "W": {
-      "item": "minecraft:orange_wool"
-    },
-    "E": {
-      "item": "minecraft:ender_pearl"
-    }
+    "W": "minecraft:orange_wool",
+    "E": "minecraft:ender_pearl"
   },
   "result": {
     "id": "elevatorid:elevator_orange"

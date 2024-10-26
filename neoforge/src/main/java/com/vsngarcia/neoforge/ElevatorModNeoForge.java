@@ -3,7 +3,6 @@ package com.vsngarcia.neoforge;
 import com.vsngarcia.Config;
 import com.vsngarcia.ElevatorHandler;
 import com.vsngarcia.ElevatorMod;
-import com.vsngarcia.neoforge.client.ClientRegistry;
 import com.vsngarcia.neoforge.init.Registry;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;

@@ -68,7 +68,12 @@ public class FabricRegistry {
 
     static {
         ELEVATOR_CONTAINER = new ExtendedScreenHandlerType<>(
-                (syncId, inventory, data) -> new ElevatorContainer(ELEVATOR_CONTAINER, syncId, data.pos(), inventory.player),
+                (syncId, inventory, data) -> new ElevatorContainer(
+                        ELEVATOR_CONTAINER,
+                        syncId,
+                        data.pos(),
+                        inventory.player
+                ),
                 ElevatorContainerData.CODEC
         );
 

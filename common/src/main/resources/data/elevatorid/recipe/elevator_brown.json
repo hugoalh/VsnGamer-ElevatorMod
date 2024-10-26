@@ -7,12 +7,8 @@
     "WWW"
   ],
   "key": {
-    "W": {
-      "item": "minecraft:brown_wool"
-    },
-    "E": {
-      "item": "minecraft:ender_pearl"
-    }
+    "W": "minecraft:brown_wool",
+    "E": "minecraft:ender_pearl"
   },
   "result": {
     "id": "elevatorid:elevator_brown"

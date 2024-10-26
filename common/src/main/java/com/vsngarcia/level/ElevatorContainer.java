@@ -37,7 +37,11 @@ public class ElevatorContainer extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player playerIn) {
-        return stillValid(ContainerLevelAccess.create(playerIn.level(), elevatorTile.getBlockPos()), playerIn, elevatorTile.getBlockState().getBlock());
+        return stillValid(
+                ContainerLevelAccess.create(playerIn.level(), elevatorTile.getBlockPos()),
+                playerIn,
+                elevatorTile.getBlockState().getBlock()
+        );
     }
 
     public BlockPos getPos() {

@@ -14,7 +14,13 @@ class FacingControllerWrapper {
     private final HashSet<FacingButton> bakedButtons = new HashSet<>();
     private final ArrayList<Point> slots = new ArrayList<>();
 
-    FacingControllerWrapper(int xIn, int yIn, BlockPos blockPos, Direction playerFacing, ClientPacketSender packetSender) {
+    FacingControllerWrapper(
+            int xIn,
+            int yIn,
+            BlockPos blockPos,
+            Direction playerFacing,
+            ClientPacketSender packetSender
+    ) {
         initSlots(xIn, yIn);
         initButtons(playerFacing, blockPos, packetSender);
     }

@@ -13,7 +13,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.level.*;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.SignalGetter;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -49,7 +52,12 @@ public class ElevatorBlock extends ElevatorBlockBase {
     }
 
     @Override
-    public boolean collisionExtendsVertically(BlockState state, BlockGetter level, BlockPos pos, Entity collidingEntity) {
+    public boolean collisionExtendsVertically(
+            BlockState state,
+            BlockGetter level,
+            BlockPos pos,
+            Entity collidingEntity
+    ) {
         return getHeldState(level, pos)
                 .map(s -> s.collisionExtendsVertically(level, pos, collidingEntity))
                 .orElse(super.collisionExtendsVertically(state, level, pos, collidingEntity));
@@ -63,7 +71,14 @@ public class ElevatorBlock extends ElevatorBlockBase {
     }
 
     @Override
-    public BlockState getAppearance(BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side, BlockState queryState, BlockPos queryPos) {
+    public BlockState getAppearance(
+            BlockState state,
+            BlockAndTintGetter level,
+            BlockPos pos,
+            Direction side,
+            BlockState queryState,
+            BlockPos queryPos
+    ) {
         if (level instanceof ServerLevel) {
             return getHeldState(level, pos)
                     .map(s -> s.getAppearance(level, pos, side, queryState, queryPos))
@@ -85,7 +100,14 @@ public class ElevatorBlock extends ElevatorBlockBase {
 
 
     @Override
-    protected BlockState getAppearance(BlockState facingState, LevelReader worldIn, BlockPos facingPos, Direction opposite, BlockState heldState, BlockPos currentPos) {
+    protected BlockState getAppearance(
+            BlockState facingState,
+            LevelReader worldIn,
+            BlockPos facingPos,
+            Direction opposite,
+            BlockState heldState,
+            BlockPos currentPos
+    ) {
         return facingState.getAppearance(worldIn, facingPos, opposite, heldState, currentPos);
     }
 
@@ -95,7 +117,13 @@ public class ElevatorBlock extends ElevatorBlockBase {
     }
 
     @Override
-    public boolean hidesNeighborFace(BlockGetter level, BlockPos pos, BlockState state, BlockState neighborState, Direction dir) {
+    public boolean hidesNeighborFace(
+            BlockGetter level,
+            BlockPos pos,
+            BlockState state,
+            BlockState neighborState,
+            Direction dir
+    ) {
         var modelData = level.getModelData(pos);
         if (modelData == ModelData.EMPTY) {
             return super.hidesNeighborFace(level, pos, state, neighborState, dir);

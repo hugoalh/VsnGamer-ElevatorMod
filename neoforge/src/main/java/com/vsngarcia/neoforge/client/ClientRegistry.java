@@ -2,9 +2,9 @@ package com.vsngarcia.neoforge.client;
 
 import com.vsngarcia.ElevatorMod;
 import com.vsngarcia.client.ColorCamoElevator;
+import com.vsngarcia.client.gui.ElevatorScreen;
 import com.vsngarcia.level.ElevatorContainer;
 import com.vsngarcia.neoforge.ElevatorBlock;
-import com.vsngarcia.client.gui.ElevatorScreen;
 import com.vsngarcia.neoforge.client.render.ElevatorBakedModel;
 import com.vsngarcia.neoforge.init.Registry;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -48,7 +48,8 @@ public class ClientRegistry {
     @SubscribeEvent
     public static void onModelBake(ModelEvent.ModifyBakingResult e) {
         e.getModels().entrySet().stream()
-                .filter(entry -> "elevatorid".equals(entry.getKey().id().getNamespace()) && entry.getKey().id().getPath().contains("elevator_"))
+                .filter(entry -> "elevatorid".equals(entry.getKey().id().getNamespace()) &&
+                        entry.getKey().id().getPath().contains("elevator_"))
                 .forEach(entry -> e.getModels().put(entry.getKey(), new ElevatorBakedModel(entry.getValue())));
     }
 }

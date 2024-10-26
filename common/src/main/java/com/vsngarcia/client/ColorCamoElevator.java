@@ -16,9 +16,15 @@ public class ColorCamoElevator implements BlockColor {
             return -1;
         }
 
-        if (state.getBlock() instanceof ElevatorBlockBase && lightReader.getBlockEntity(pos) instanceof ElevatorBlockEntityBase tile) {
+        if (state.getBlock() instanceof ElevatorBlockBase &&
+                lightReader.getBlockEntity(pos) instanceof ElevatorBlockEntityBase tile) {
             if (tile.getHeldState() != null) {
-                return Minecraft.getInstance().getBlockColors().getColor(tile.getHeldState(), lightReader, pos, tintIndex);
+                return Minecraft.getInstance().getBlockColors().getColor(
+                        tile.getHeldState(),
+                        lightReader,
+                        pos,
+                        tintIndex
+                );
             }
         }
         return -1;

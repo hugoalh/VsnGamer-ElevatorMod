@@ -12,7 +12,10 @@ import net.minecraft.server.level.ServerPlayer;
 
 
 public record RemoveCamoPacket(BlockPos pos) implements CustomPacketPayload {
-    public static final Type<RemoveCamoPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ElevatorMod.ID, "remove_camo"));
+    public static final Type<RemoveCamoPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(
+            ElevatorMod.ID,
+            "remove_camo"
+    ));
 
     public static final StreamCodec<ByteBuf, RemoveCamoPacket> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC,

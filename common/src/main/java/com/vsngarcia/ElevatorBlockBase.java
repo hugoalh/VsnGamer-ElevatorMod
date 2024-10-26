@@ -45,19 +45,18 @@ public abstract class ElevatorBlockBase extends HorizontalDirectionalBlock imple
     private final Supplier<BlockEntityType<? extends ElevatorBlockEntityBase>> tileEntityType;
 
 
-    public ElevatorBlockBase(DyeColor color, Supplier<BlockEntityType<? extends ElevatorBlockEntityBase>> type) {
-
-        super(Properties
-                        .of()
-                        .mapColor(color)
-                        .sound(SoundType.WOOL)
-                        .strength(0.8F)
-                        .dynamicShape()
-                        .noOcclusion()
-                        .isValidSpawn(isValidSpawn(type))
-                        .setId(getResourceKey(Registries.BLOCK, color))
-//                .forceSolidOn()
-        );
+    public ElevatorBlockBase(
+            DyeColor color,
+            Supplier<BlockEntityType<? extends ElevatorBlockEntityBase>> type,
+            Properties props
+    ) {
+        super(props.mapColor(color)
+                .sound(SoundType.WOOL)
+                .strength(0.8F)
+                .dynamicShape()
+                .noOcclusion()
+                .isValidSpawn(isValidSpawn(type))
+                .setId(getResourceKey(Registries.BLOCK, color)));
 
         registerDefaultState(
                 defaultBlockState()
@@ -68,6 +67,10 @@ public abstract class ElevatorBlockBase extends HorizontalDirectionalBlock imple
 
         dyeColor = color;
         tileEntityType = type;
+    }
+
+    public ElevatorBlockBase(DyeColor color, Supplier<BlockEntityType<? extends ElevatorBlockEntityBase>> type) {
+        this(color, type, Properties.of());
     }
 
     public static <T> ResourceKey<T> getResourceKey(ResourceKey<Registry<T>> type, DyeColor color) {
@@ -95,7 +98,15 @@ public abstract class ElevatorBlockBase extends HorizontalDirectionalBlock imple
     protected abstract void openMenu(Player player, ElevatorBlockEntityBase tile, BlockPos pos);
 
     @Override
-    public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+    public InteractionResult useItemOn(
+            ItemStack itemStack,
+            BlockState state,
+            Level worldIn,
+            BlockPos pos,
+            Player player,
+            InteractionHand handIn,
+            BlockHitResult hit
+    ) {
         if (worldIn.isClientSide) {
             return InteractionResult.SUCCESS;
         }
@@ -201,10 +212,26 @@ public abstract class ElevatorBlockBase extends HorizontalDirectionalBlock imple
                     }
                 });
 
-        return super.updateShape(blockState, levelReader, scheduledTickAccess, currentPos, direction, facingPos, facingState, randomSource);
+        return super.updateShape(
+                blockState,
+                levelReader,
+                scheduledTickAccess,
+                currentPos,
+                direction,
+                facingPos,
+                facingState,
+                randomSource
+        );
     }
 
-    protected abstract BlockState getAppearance(BlockState facingState, LevelReader worldIn, BlockPos facingPos, Direction opposite, BlockState heldState, BlockPos currentPos);
+    protected abstract BlockState getAppearance(
+            BlockState facingState,
+            LevelReader worldIn,
+            BlockPos facingPos,
+            Direction opposite,
+            BlockState heldState,
+            BlockPos currentPos
+    );
 
     // Redstone
     @Override

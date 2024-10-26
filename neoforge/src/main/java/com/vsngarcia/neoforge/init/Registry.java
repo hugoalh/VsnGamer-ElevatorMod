@@ -1,9 +1,9 @@
 package com.vsngarcia.neoforge.init;
 
 import com.vsngarcia.ElevatorMod;
+import com.vsngarcia.level.ElevatorContainer;
 import com.vsngarcia.neoforge.ElevatorBlock;
 import com.vsngarcia.neoforge.tile.ElevatorBlockEntity;
-import com.vsngarcia.level.ElevatorContainer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -30,11 +30,17 @@ public class Registry {
 
     static {
         Arrays.stream(DyeColor.values()).forEach(color ->
-                ELEVATOR_BLOCKS.put(color, BLOCKS.register("elevator_" + color.getName(), () -> new ElevatorBlock(color)))
+                ELEVATOR_BLOCKS.put(
+                        color,
+                        BLOCKS.register("elevator_" + color.getName(), () -> new ElevatorBlock(color))
+                )
         );
     }
 
-    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, ElevatorMod.ID);
+    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(
+            Registries.BLOCK_ENTITY_TYPE,
+            ElevatorMod.ID
+    );
     public static final Supplier<BlockEntityType<ElevatorBlockEntity>> ELEVATOR_TILE_ENTITY = BLOCK_ENTITIES.register(
             "elevator_tile",
             () -> new BlockEntityType<>(
@@ -52,29 +58,49 @@ public class Registry {
         );
     }
 
-    private static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(Registries.MENU, ElevatorMod.ID);
+    private static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(
+            Registries.MENU,
+            ElevatorMod.ID
+    );
     public static Supplier<MenuType<ElevatorContainer>> ELEVATOR_CONTAINER = null;
 
     static {
         ELEVATOR_CONTAINER = CONTAINERS.register(
                 "elevator_container", () ->
                         IMenuTypeExtension.create((windowId, inv, data) ->
-                                new ElevatorContainer(ELEVATOR_CONTAINER.get(), windowId, data.readBlockPos(), inv.player)
+                                new ElevatorContainer(
+                                        ELEVATOR_CONTAINER.get(),
+                                        windowId,
+                                        data.readBlockPos(),
+                                        inv.player
+                                )
                         )
         );
     }
 
-    private static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, ElevatorMod.ID);
+    private static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(
+            Registries.SOUND_EVENT,
+            ElevatorMod.ID
+    );
     public static final Supplier<SoundEvent> TELEPORT_SOUND = SOUNDS.register(
-            "teleport", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(ElevatorMod.ID, "teleport"))
+            "teleport",
+            () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(ElevatorMod.ID, "teleport"))
     );
     public static final Supplier<SoundEvent> CAMOUFLAGE_SOUND = SOUNDS.register(
-            "camouflage", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(ElevatorMod.ID, "camouflage"))
+            "camouflage",
+            () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(
+                    ElevatorMod.ID,
+                    "camouflage"
+            ))
     );
 
-    private static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ElevatorMod.ID);
+    private static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(
+            Registries.CREATIVE_MODE_TAB,
+            ElevatorMod.ID
+    );
 
-    private static final Supplier<CreativeModeTab> ELEVATORS_TAB = CREATIVE_TABS.register("elevators_tab",
+    private static final Supplier<CreativeModeTab> ELEVATORS_TAB = CREATIVE_TABS.register(
+            "elevators_tab",
             () -> CreativeModeTab.builder()
                     .icon(() -> ELEVATOR_ITEMS.get(DyeColor.WHITE).get().getDefaultInstance())
                     .displayItems((params, output) -> ELEVATOR_ITEMS.values().forEach(item -> output.accept(item.get())))

@@ -53,7 +53,8 @@ public final class ElevatorModFabricClient implements ClientModInitializer {
                         }
 
                         var modelId = location.id();
-                        if (!ElevatorMod.ID.equals(modelId.getNamespace()) || !modelId.getPath().startsWith("elevator_")) {
+                        if (!ElevatorMod.ID.equals(modelId.getNamespace()) ||
+                                !modelId.getPath().startsWith("elevator_")) {
                             return model;
                         }
 

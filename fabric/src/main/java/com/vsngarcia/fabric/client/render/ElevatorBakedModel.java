@@ -40,7 +40,13 @@ public class ElevatorBakedModel extends ForwardingBakedModel {
     }
 
     @Override
-    public void emitBlockQuads(BlockAndTintGetter blockView, BlockState state, BlockPos pos, Supplier<RandomSource> randomSupplier, RenderContext context) {
+    public void emitBlockQuads(
+            BlockAndTintGetter blockView,
+            BlockState state,
+            BlockPos pos,
+            Supplier<RandomSource> randomSupplier,
+            RenderContext context
+    ) {
         if (state != null && state.getValue(DIRECTIONAL) && state.getValue(SHOW_ARROW)) {
             context.pushTransform(
                     quad -> {

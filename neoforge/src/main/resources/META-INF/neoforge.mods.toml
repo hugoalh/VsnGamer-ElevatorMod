@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[4,)"
-issueTrackerURL="https://github.com/VsnGamer/ElevatorMod/issues/"
+issueTrackerURL = "https://github.com/VsnGamer/ElevatorMod/issues/"
 license = "MIT"
 
 [[mods]]
@@ -9,21 +9,21 @@ version = "${version}"
 displayName = "ElevatorMod"
 authors = "VsnGamer"
 logoFile = "logo.png"
-credits="OpenBlocks Team"
+credits = "OpenBlocks Team"
 displayURL = "https://github.com/VsnGamer/ElevatorMod"
 description = '''Simple port of the elevator from OpenBlocks to 1.8+'''
 
 [[dependencies.elevatorid]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.1,)"
+versionRange = "[21.3,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.elevatorid]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.1,)"
+versionRange = "[1.21.3,)"
 ordering = "NONE"
 side = "BOTH"
 

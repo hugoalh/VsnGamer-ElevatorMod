@@ -49,11 +49,19 @@ public class ElevatorBakedModel extends BakedModelWrapper<BakedModel> {
 
     @NotNull
     @Override
-    public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
+    public ChunkRenderTypeSet getRenderTypes(
+            @NotNull BlockState state,
+            @NotNull RandomSource rand,
+            @NotNull ModelData data
+    ) {
         BlockState heldState = data.get(HELD_STATE);
         ChunkRenderTypeSet types;
         if (heldState != null)
-            types = Minecraft.getInstance().getBlockRenderer().getBlockModel(heldState).getRenderTypes(heldState, rand, data);
+            types = Minecraft.getInstance().getBlockRenderer().getBlockModel(heldState).getRenderTypes(
+                    heldState,
+                    rand,
+                    data
+            );
         else
             types = super.getRenderTypes(state, rand, data);
 
@@ -62,14 +70,24 @@ public class ElevatorBakedModel extends BakedModelWrapper<BakedModel> {
 
     @Nonnull
     @Override
-    public List<BakedQuad> getQuads(BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull ModelData extraData, RenderType renderType) {
+    public List<BakedQuad> getQuads(
+            BlockState state,
+            @Nullable Direction side,
+            @Nonnull RandomSource rand,
+            @Nonnull ModelData extraData,
+            RenderType renderType
+    ) {
         List<BakedQuad> result = new ArrayList<>();
         BlockRenderDispatcher dispatcher = Minecraft.getInstance().getBlockRenderer();
 
         // Directional arrow
         if (renderType == RenderType.cutoutMipped()) {
             if (state.getValue(ElevatorBlock.DIRECTIONAL) && state.getValue(ElevatorBlock.SHOW_ARROW)) {
-                BakedModel arrowModel = dispatcher.getBlockModelShaper().getModelManager().getModel(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(ElevatorMod.ID, "arrow")));
+                BakedModel arrowModel = dispatcher.getBlockModelShaper().getModelManager().getModel(
+                        ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(
+                                ElevatorMod.ID,
+                                "arrow"
+                        )));
                 BlockModelRotation rot = BlockModelRotation.by(0, (int) state.getValue(ElevatorBlock.FACING).toYRot());
                 IQuadTransformer transformer = QuadTransformers.applying(rot.getRotation().blockCenterToCorner());
 

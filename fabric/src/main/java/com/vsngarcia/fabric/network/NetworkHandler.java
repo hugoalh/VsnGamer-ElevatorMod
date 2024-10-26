@@ -21,15 +21,27 @@ public class NetworkHandler {
         );
 
         PayloadTypeRegistry.playC2S().register(SetDirectionalPacket.TYPE, SetDirectionalPacket.STREAM_CODEC);
-        ServerPlayNetworking.registerGlobalReceiver(SetDirectionalPacket.TYPE, (pkt, ctx) -> SetDirectionalPacket.handle(pkt, ctx.player()));
+        ServerPlayNetworking.registerGlobalReceiver(
+                SetDirectionalPacket.TYPE,
+                (pkt, ctx) -> SetDirectionalPacket.handle(pkt, ctx.player())
+        );
 
         PayloadTypeRegistry.playC2S().register(SetArrowPacket.TYPE, SetArrowPacket.STREAM_CODEC);
-        ServerPlayNetworking.registerGlobalReceiver(SetArrowPacket.TYPE, (pkt, ctx) -> SetArrowPacket.handle(pkt, ctx.player()));
+        ServerPlayNetworking.registerGlobalReceiver(
+                SetArrowPacket.TYPE,
+                (pkt, ctx) -> SetArrowPacket.handle(pkt, ctx.player())
+        );
 
         PayloadTypeRegistry.playC2S().register(RemoveCamoPacket.TYPE, RemoveCamoPacket.STREAM_CODEC);
-        ServerPlayNetworking.registerGlobalReceiver(RemoveCamoPacket.TYPE, (pkt, ctx) -> RemoveCamoPacket.handle(pkt, ctx.player()));
+        ServerPlayNetworking.registerGlobalReceiver(
+                RemoveCamoPacket.TYPE,
+                (pkt, ctx) -> RemoveCamoPacket.handle(pkt, ctx.player())
+        );
 
         PayloadTypeRegistry.playC2S().register(SetFacingPacket.TYPE, SetFacingPacket.STREAM_CODEC);
-        ServerPlayNetworking.registerGlobalReceiver(SetFacingPacket.TYPE, (pkt, ctx) -> SetFacingPacket.handle(pkt, ctx.player()));
+        ServerPlayNetworking.registerGlobalReceiver(
+                SetFacingPacket.TYPE,
+                (pkt, ctx) -> SetFacingPacket.handle(pkt, ctx.player())
+        );
     }
 }

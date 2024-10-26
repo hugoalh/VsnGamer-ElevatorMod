@@ -53,7 +53,8 @@ public class ElevatorHandler {
 
         while (true) {
             toPos.setY(toPos.getY() + facing.getStepY());
-            if (world.isOutsideBuildHeight(toPos) || Math.abs(toPos.getY() - fromPos.getY()) > Config.GENERAL.range.get()) {
+            if (world.isOutsideBuildHeight(toPos) ||
+                    Math.abs(toPos.getY() - fromPos.getY()) > Config.GENERAL.range.get()) {
                 break;
             }
 
