@@ -8,12 +8,14 @@ Port of the elevator from OpenBlocks to Minecraft 1.8+
 
 ## Dependencies
 
-Forge and NeoForge versions do **not** require any dependencies.
+**Forge / NeoForge**
+
+- None
 
 **Fabric**
 
-- [Fabric API](https://github.com/FabricMC/fabric)
-- [Forge Config API Port](https://github.com/Fuzss/forgeconfigapiport)
+- [Fabric API](https://github.com/FabricMC/fabric) - Mandatory
+- [Forge Config API Port](https://github.com/Fuzss/forgeconfigapiport) - Embedded
 
 ## Crafting
 
