@@ -31,7 +31,7 @@ public class Config {
                     .defineInRange("range", 384, 3, 4064);
 
             activationRange = builder
-                    .comment("Elevator activation range")
+                    .comment("Elevator activation range, increasing it can help with jump boost effects")
                     .defineInRange("activationRange", 6, 1, 64);
 
             precisionTarget = builder

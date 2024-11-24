@@ -12,5 +12,5 @@ dependencies {
     // Do NOT use other classes from Fabric Loader.
     modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
 
-    modApi "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:21.3.0"
+    modApi "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:$rootProject.forge_config_api_port_version"
 }
