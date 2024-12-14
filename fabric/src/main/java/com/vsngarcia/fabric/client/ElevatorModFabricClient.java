@@ -11,9 +11,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelModifier;
+import net.fabricmc.fabric.api.client.model.loading.v1.WrapperGroupableModel;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -45,9 +49,10 @@ public final class ElevatorModFabricClient implements ClientModInitializer {
     public static class ElevatorModelLoadingPlugin implements ModelLoadingPlugin {
         @Override
         public void initialize(Context ctx) {
-            ctx.modifyModelAfterBake().register(
+            ctx.modifyBlockModelOnLoad().register(
+                    ModelModifier.WRAP_PHASE,
                     (model, context) -> {
-                        ModelResourceLocation location = context.topLevelId();
+                        ModelResourceLocation location = context.id();
                         if (location == null || "inventory".equals(location.variant())) {
                             return model;
                         }
@@ -59,7 +64,19 @@ public final class ElevatorModFabricClient implements ClientModInitializer {
                         }
 
                         ElevatorMod.LOGGER.debug("Wrapping elevator model: {}", modelId);
-                        return new ElevatorBakedModel(model);
+                        return new WrapperGroupableModel(model) {
+
+//                            @Override
+//                            public void resolveDependencies(Resolver resolver) {
+//                                super.resolveDependencies(resolver);
+//                                resolver.resolve(location.id());
+//                            }
+
+                            @Override
+                            public BakedModel bake(ModelBaker baker) {
+                                return new ElevatorBakedModel(model.bake(baker));
+                            }
+                        };
                     }
             );
 

@@ -7,7 +7,6 @@ import com.vsngarcia.level.ElevatorContainer;
 import com.vsngarcia.neoforge.ElevatorBlock;
 import com.vsngarcia.neoforge.client.render.ElevatorBakedModel;
 import com.vsngarcia.neoforge.init.Registry;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -42,14 +41,16 @@ public class ClientRegistry {
 
     @SubscribeEvent
     public static void onModelRegistry(ModelEvent.RegisterAdditional e) {
-        e.register(ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath("elevatorid", "arrow")));
+        e.register(ResourceLocation.fromNamespaceAndPath(ElevatorMod.ID, "arrow"));
     }
 
     @SubscribeEvent
     public static void onModelBake(ModelEvent.ModifyBakingResult e) {
-        e.getModels().entrySet().stream()
-                .filter(entry -> "elevatorid".equals(entry.getKey().id().getNamespace()) &&
+        e.getBakingResult().blockStateModels().entrySet().stream()
+                .filter(entry -> ElevatorMod.ID.equals(entry.getKey().id().getNamespace()) &&
                         entry.getKey().id().getPath().contains("elevator_"))
-                .forEach(entry -> e.getModels().put(entry.getKey(), new ElevatorBakedModel(entry.getValue())));
+                .forEach(entry -> e.getBakingResult()
+                        .blockStateModels()
+                        .put(entry.getKey(), new ElevatorBakedModel(entry.getValue())));
     }
 }

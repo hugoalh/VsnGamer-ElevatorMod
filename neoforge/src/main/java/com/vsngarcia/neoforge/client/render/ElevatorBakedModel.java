@@ -9,13 +9,12 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.BlockModelRotation;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.DelegateBakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
 import net.neoforged.neoforge.client.model.IQuadTransformer;
 import net.neoforged.neoforge.client.model.QuadTransformers;
 import net.neoforged.neoforge.client.model.data.ModelData;
@@ -28,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ElevatorBakedModel extends BakedModelWrapper<BakedModel> {
+public class ElevatorBakedModel extends DelegateBakedModel {
 
     public static final ModelProperty<BlockState> HELD_STATE = new ModelProperty<>();
 
@@ -83,11 +82,12 @@ public class ElevatorBakedModel extends BakedModelWrapper<BakedModel> {
         // Directional arrow
         if (renderType == RenderType.cutoutMipped()) {
             if (state.getValue(ElevatorBlock.DIRECTIONAL) && state.getValue(ElevatorBlock.SHOW_ARROW)) {
-                BakedModel arrowModel = dispatcher.getBlockModelShaper().getModelManager().getModel(
-                        ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(
+                BakedModel arrowModel = Minecraft.getInstance().getModelManager().getStandaloneModel(
+                        ResourceLocation.fromNamespaceAndPath(
                                 ElevatorMod.ID,
                                 "arrow"
-                        )));
+                        )
+                );
                 BlockModelRotation rot = BlockModelRotation.by(0, (int) state.getValue(ElevatorBlock.FACING).toYRot());
                 IQuadTransformer transformer = QuadTransformers.applying(rot.getRotation().blockCenterToCorner());
 
@@ -112,7 +112,7 @@ public class ElevatorBakedModel extends BakedModelWrapper<BakedModel> {
         }
 
         // Fallback / original model
-        result.addAll(originalModel.getQuads(state, side, rand, extraData, renderType));
+        result.addAll(parent.getQuads(state, side, rand, extraData, renderType));
         return result;
     }
 }

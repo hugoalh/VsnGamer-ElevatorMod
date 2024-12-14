@@ -29,6 +29,6 @@
     "minecraft": "~1.21.3",
     "java": ">=21",
     "fabric-api": "*",
-    "forgeconfigapiport": ">=21.3.0"
+    "forgeconfigapiport": ">=21.4.0"
   }
 }
